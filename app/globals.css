@@ -118,3 +118,18 @@ body {
 .prose :where(:not(pre) > code)::after {
   content: none;
 }
+
+/*
+ * 인용문: typography 기본 스타일의 자동 따옴표(“ ”), 기울임, 굵기 500 을 없앤다.
+ * 글에 이미 따옴표가 있으면 두 번 찍히고, 한글은 기울임 글꼴이 없어 글자가 억지로 눕는다.
+ * 인용문은 왼쪽 세로선으로만 구분한다.
+ */
+.prose :where(blockquote) {
+  font-style: normal;
+  font-weight: 400;
+}
+
+.prose :where(blockquote p:first-of-type)::before,
+.prose :where(blockquote p:last-of-type)::after {
+  content: none;
+}

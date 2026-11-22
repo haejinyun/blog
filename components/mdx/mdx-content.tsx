@@ -21,8 +21,22 @@ function MdxImage({ alt = '', ...props }: ComponentProps<'img'>) {
   return <img alt={alt} loading="lazy" decoding="async" {...props} />;
 }
 
+/**
+ * 표는 가로 스크롤 상자로 감싼다. 칸이 많거나 줄바꿈 안 되는 내용(인라인 코드 등)이 있으면
+ * 표가 화면보다 넓어져 모바일에서 페이지 전체가 가로로 밀리기 때문이다 (코드 블록과 같은 방식).
+ * 한글 단어가 칸 안에서 글자 단위로 끊기지 않게 break-keep, 그래도 넓으면 표만 스크롤된다.
+ */
+function MdxTable(props: ComponentProps<'table'>) {
+  return (
+    <div className="overflow-x-auto break-keep">
+      <table {...props} />
+    </div>
+  );
+}
+
 const defaultComponents: MdxComponents = {
   img: MdxImage,
+  table: MdxTable,
 };
 
 export function MdxContent({ code, components }: MdxContentProps) {
