@@ -10,7 +10,8 @@
 ## 현재 상태 (2026-11-22 기준, `https://paori.dev` 배포 완료)
 
 - SPEC 8장의 Phase 1~4 완료, velog 마이그레이션 1차(시리즈 1개, 7편) 완료, Vercel 배포와 도메인 연결 완료
-- 테스트: `pnpm test` 107개 통과, 15개 skip (draft 대상 없음 10개, Projects·About 숨김 5개) / `pnpm lint` 통과
+- 테스트: `pnpm test` 113개 통과, 14개 skip (draft 대상 없음 10개, Projects 숨김 4개) / `pnpm lint` 통과
+- About 페이지 공개 (2026-11-23, 상단 메뉴 BLOG·SERIES·ABOUT). Projects는 아직 숨김
 - git: GitHub `haejinyun/blog`(공개)의 `main`. push하면 Vercel이 자동 배포한다. **커밋은 사용자가 요청할 때만** 한다
 - 검색 등록 완료: Google Search Console(도메인 속성), 네이버 서치어드바이저. `vercel.app` → `paori.dev` 리다이렉트 완료
 
@@ -29,11 +30,9 @@ pnpm build && pnpm preview   # 정적 결과물 확인
 ## 다음 할 일
 
 ### 우선순위 (2026-11-22 정리)
-1. **다음 세션: About 다시 열기**. 시작할 때 정할 것
-   - 회사명을 About에 쓸지. `.forbidden-strings.local`에 회사명을 넣기로 했던 것과 충돌함 (회사명을 쓰면 금지 목록에서 빼야 함)
-   - 지금처럼 `about.mdx` 자유 마크다운으로 쓸지, 경력·기술을 frontmatter 구조화 데이터 + 전용 컴포넌트(타임라인 등)로 만들지 (구조화하면 SPEC 5장 `About` 인터페이스 변경 → 사용자 승인)
-   - 이력서 PDF를 둘지 (`resumePdf`), Person JSON-LD에 직함·SNS 링크(`jobTitle`, `sameAs`)를 넣을지
-   - 다 쓰면 `[숨김]` 주석에서 About만 되돌리고(메뉴 3개) 관련 `test.skip` 해제. 홈 소개 문단(placeholder)도 같이 쓰면 좋음
+1. **About 후속** (메뉴 공개 완료 2026-11-23). 남은 것
+   - 이력서 PDF(`resumePdf`)는 웹용 PDF가 따로 있어야 함. 지금 가진 PDF에는 사진·전화번호·생년월일이 있어서 올리면 안 됨
+   - Person JSON-LD에 직함(`jobTitle`)·SNS 링크(`sameAs`)를 넣을지, 홈 소개 문단(placeholder)
 2. **콘텐츠 다듬기**: velog 3편 description, 시리즈 설명, 태그 달지 정하기, 나머지 velog 시리즈 가져오기 (시리즈 없는 글은 스크립트 미지원)
 3. **Projects 다시 열기**: 실제 케이스 스터디 작성, `sample-*` 삭제, 메뉴 4개 복구(360px 넘침 테스트 확인)
 4. **품질·안전**: `.forbidden-strings.local` 작성 + 검사 보강, draft 테스트를 픽스처 빌드로 전환(지금 skip 10개), dev와 build의 `.velite` 분리
@@ -51,11 +50,11 @@ pnpm build && pnpm preview   # 정적 결과물 확인
 - [ ] 한글 slug 글이 생기면 배포 사이트에서 열리는지 확인
 
 ### 사용자가 채울 콘텐츠
-- [ ] Projects·About 다시 열기: 콘텐츠를 채운 뒤 `[숨김]`으로 검색해서 `app/page.tsx`, `components/layout/site-header.tsx` 주석과 `tests/e2e`의 `test.skip`을 되돌리기. 메뉴가 4개로 늘면 360px 화면 넘침 테스트(`tests/e2e/header.spec.ts`)를 꼭 확인 (모바일 메뉴 간격 `gap-1`)
+- [ ] Projects 다시 열기 (About은 2026-11-23 공개): 콘텐츠를 채운 뒤 `[숨김]`으로 검색해서 `app/page.tsx`, `components/layout/site-header.tsx` 주석과 `tests/e2e`의 `test.skip`을 되돌리기. 메뉴가 4개로 늘면 360px 화면 넘침 테스트(`tests/e2e/header.spec.ts`)를 꼭 확인 (모바일 메뉴 간격 `gap-1`)
 - [ ] `content/projects/*`: placeholder 프로젝트를 실제 케이스 스터디로 교체 (`sample-*` 폴더는 삭제)
-- [ ] `content/about.mdx`: 실제 이력. PDF가 생기면 `content/`에 두고 frontmatter `resumePdf: ./resume.pdf` (Velite `s.file()`이 `public/static/`으로 복사)
+- [x] `content/about.mdx`: 실제 이력 (2026-11-22). PDF가 생기면 `content/`에 두고 frontmatter `resumePdf: ./resume.pdf` (Velite `s.file()`이 `public/static/`으로 복사). 사진·전화번호·생년월일 없는 버전만
 - [ ] 홈 소개 문구 (`app/page.tsx`의 placeholder 문단)
-- [ ] `.forbidden-strings.local`에 금지 문자열 적기 (사용자가 나중에 하기로 함, 2026-11-22). 대상: 회사명(한글·영문·약칭), 클라우드 이름, 레포 이름, API·내부 도메인, 서버 스택·서버 이름, IP, 집 주소, 전화번호. 완전히 같은 문자열(대소문자 포함)로 비교하므로 주소는 겹치지 않는 일부를 적는다
+- [ ] `.forbidden-strings.local`에 금지 문자열 적기 (사용자가 나중에 하기로 함, 2026-11-22). 대상: 클라우드 이름, 레포 이름, API·내부 도메인, 서버 스택·서버 이름, IP, 집 주소, 전화번호. 완전히 같은 문자열(대소문자 포함)로 비교하므로 주소는 겹치지 않는 일부를 적는다. 회사명은 About에 공개하므로 넣지 않는다 (2026-11-22)
 - [ ] (제안) 금지 정보 검사 보강: 사설 IP·내부 도메인 형태·`호스트:포트` 정규식 추가, 검사 범위를 빌드 결과물에서 커밋 대상 원본 파일까지 넓히기
 
 ### 디자인 (1차 적용 완료, 기준: `docs/DESIGN.md`)
@@ -136,6 +135,9 @@ pnpm build && pnpm preview   # 정적 결과물 확인
 | 2026-11-22 | Projects·About을 콘텐츠 준비 전까지 숨김: 상단 메뉴 항목과 홈 대표 프로젝트 섹션을 코드 주석으로 막음(`[숨김]` 표시). 관련 테스트 5개 `test.skip` | 사용자 결정(설정값 방식 대신 주석). 페이지(`/projects`, `/about`)는 빌드되고 sitemap에도 남아 있어 주소로는 접근 가능 |
 | 2026-11-22 | 작성 중인 글·프로젝트는 `content/drafts/`(git 제외)에서 쓰고 발행할 때 옮김. placeholder `draft-sample-project`는 `content/drafts/projects/`로 이동 | 사용자 결정: 공개 레포에는 화면에 보일 완성본만. 경로로 구분해야 `.gitignore`가 동작함. 폴더 이름 접두어 방식은 `draft` 값과 어긋나면 완성 글이 git에서 빠질 수 있어서 피함. 단점: draft는 백업이 없음 |
 | 2026-11-22 | 디자인 레퍼런스 원문은 git에서 제외(`docs/*.local.md`), 공개용 `docs/DESIGN.md`는 직접 쓴 적용 규칙 요약 | 공개 레포에 외부 글을 통째로 올리지 않기 위해 (저작권). 비상업 사용이어도 허락 없는 전문 공개는 피함. 사용자 결정 |
+| 2026-11-22 | About을 구조화 데이터로: `about.mdx` frontmatter에 직함·한 줄 소개·스킬·경력·코스/프로젝트·학력(`ResumeEntry` 공용 모양), 본문은 Introduce. `updated`(최종 수정일) 필드와 표시 삭제 | 사용자 결정(수정하기 쉽게). 레이아웃은 위 제목 + 아래 내용(작은 대문자 라벨), yceffort.kr/resume 일부 참고. 내용은 사용자 이력서 PDF 기준. 회사명은 공개(금지 목록 후보에서 제외), 자격증은 뺌. 사진·전화번호·생년월일 없음 |
+| 2026-11-23 | About 이력 항목마다 기술 스택 한 줄(`techStack`)과 링크(`links`, 새 탭) 추가, 상단 이메일 옆에 GitHub 주소 | 사용자 요청 (yceffort.kr/resume 방식). GitHub 링크는 연락처 영역 밖에 둬서 "연락처는 이메일만" 규칙과 테스트를 유지 |
+| 2026-11-23 | About 메뉴 공개 (Projects는 계속 숨김) | 사용자 결정. 내용 작성이 끝나서 |
 | 2026-11-20 | 디자인 문서의 숫자 간격 토큰(`--spacing-6: 6px` 등)은 가져오지 않고 `section`(56px)·`card`(14px)·`element`(10px)로 정함 | 숫자 토큰은 Tailwind 기본 눈금(`p-6` = 24px)을 덮어씀. 범위 값(48-71px)은 CSS 값이 아니라서 범위 안의 값 하나로 |
 
 ---
@@ -233,4 +235,5 @@ pnpm build && pnpm preview   # 정적 결과물 확인
 - **배포 마무리**: 네이버 서치어드바이저 메타 태그 + 테스트 1개, README Deployment 섹션, SPEC에 배포 범위·결정(2·3·4·12장) 반영하고 완료된 Phase 조건·미정 사항·다음 단계 항목 정리, PROGRESS 완료 항목 정리
 - **사이트 이름·글자 크기**: 사이트 이름 `paori`, 글자 크기 토큰 축소(`heading-sm` 추가), 모바일 메뉴 간격
 - **푸터 이스터에그**: 파오리 아이콘 + 모달(샘플 내용), 테스트 2개 추가
+- **About 작성**: 구조화 스키마(`velite.config.ts`의 `resumeEntry`), `components/about/*`(hero, section, resume-entry-list), `formatResumePeriod`, 테스트 4개 추가
 - **코드 표시**: Shiki 하이라이팅, 인라인 코드 백틱 제거, 테스트 2개 추가(`tests/e2e/code.spec.ts`). 검색 등록·vercel.app 리다이렉트 완료(사용자)
