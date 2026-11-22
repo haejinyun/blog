@@ -39,10 +39,6 @@ The domain is registered at Gabia and points to Vercel via A and CNAME records. 
 - **Lint/Format**: Biome
 - **Test**: Playwright
 
-## Author
-
-Haejin Yun · [GitHub](https://github.com/haejinyun)
-
 <details>
 <summary>🦆</summary>
 
