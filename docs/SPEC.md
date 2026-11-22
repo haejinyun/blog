@@ -284,7 +284,7 @@ Phase 1(기반), 2(탐색), 3(SEO), 4(포트폴리오/이력)는 모두 끝났�
 
 ## 11. velog 마이그레이션 (2026-11-20 범위 추가)
 
-- `pnpm import:velog --username <아이디> --series <시리즈 slug>`로 시리즈 하나를 가져온다 (`scripts/import-velog.ts`).
+- `pnpm import:velog --username <아이디> --series <시리즈 slug>`로 시리즈 하나를, `--post <글 slug>`로 시리즈에 속하지 않은 글 하나를 가져온다 (`scripts/import-velog.ts`, `--post`는 2026-11-23 추가).
 - velog 공개 GraphQL API(`https://v2.velog.io/graphql`)를 읽기만 한다. 로그인 토큰을 쓰지 않으므로 비공개 글은 가져오지 않는다.
 - 글은 `content/posts/YYYY/MM/<velog url_slug>/index.md`로 저장한다. 날짜 폴더는 `released_at`의 한국 시간 기준이다.
 - 본문과 썸네일 이미지는 내려받아 글 폴더에 저장하고 본문은 상대 경로(`./image-1.png`)로 바꾼다. 빌드하면 다른 글 이미지처럼 `public/static/`으로 복사된다.

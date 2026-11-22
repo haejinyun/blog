@@ -1,13 +1,13 @@
 /**
- * velog 시리즈 하나를 content/ 로 가져온다. (SPEC 11장)
+ * velog 시리즈 하나, 또는 시리즈에 속하지 않은 글 하나를 content/ 로 가져온다. (SPEC 11장)
  *
- * 사용법: pnpm import:velog --username <아이디> --series <시리즈 slug> [--force]
+ * 사용법: pnpm import:velog --username <아이디> (--series <시리즈 slug> | --post <글 slug>) [--force]
  *
  * - velog 공개 GraphQL API 를 읽기만 한다 (로그인 토큰 없음 → 비공개 글은 가져오지 않음).
  * - 글: content/posts/YYYY/MM/<url_slug>/index.md (날짜 폴더는 released_at 의 한국 시간 기준)
  * - 이미지: 본문 이미지와 velog 썸네일(메인 이미지)을 글 폴더에 내려받고 본문은 상대 경로로 바꾼다.
  *   메인 이미지는 frontmatter thumbnail 이 되어 글 상단, 블로그 목록, 썸네일로 쓰인다.
- * - 시리즈: content/series/<시리즈 slug>.md
+ * - 시리즈: content/series/<시리즈 slug>.md (--post 로 가져온 글은 velog 에서 시리즈에 속해 있어도 시리즈 없이 저장)
  * - 이미 있는 글·시리즈 파일은 건너뛴다 (로컬에서 고친 내용 보호). --force 일 때만 덮어쓴다.
  *
  * Node 22 의 TypeScript 타입 제거 기능으로 바로 실행한다 (타입 외의 TS 전용 문법은 쓰지 않는다).
@@ -42,9 +42,20 @@ interface VelogPost {
 
 interface ImportOptions {
   username: string;
-  seriesSlug: string;
   force: boolean;
 }
+
+/** 가져올 대상: 시리즈 전체 또는 글 하나 */
+type ImportTarget = { kind: 'series'; slug: string } | { kind: 'post'; slug: string };
+
+/** 글이 속한 시리즈와 순서 (frontmatter series·seriesOrder) */
+interface SeriesPlacement {
+  seriesSlug: string;
+  order: number;
+}
+
+const USAGE =
+  '사용법: pnpm import:velog --username <아이디> (--series <시리즈 slug> | --post <글 slug>) [--force]';
 
 type ImportStatus = 'created' | 'overwritten' | 'skipped';
 
@@ -185,8 +196,7 @@ function normalizeDescription(text: string | null, fallback: string): string {
 
 function renderPostFile(
   post: VelogPost,
-  series: VelogSeries,
-  seriesOrder: number,
+  placement: SeriesPlacement | undefined,
   username: string,
   fileNameByUrl: Map<string, string>,
 ): string {
@@ -200,8 +210,8 @@ function renderPostFile(
       date: post.released_at,
       updated: isUpdatedOnDifferentDay ? post.updated_at : undefined,
       tags: post.tags ?? [],
-      series: series.url_slug,
-      seriesOrder,
+      series: placement?.seriesSlug,
+      seriesOrder: placement?.order,
       thumbnail: thumbnail ? `./${thumbnail}` : undefined,
     },
     [`velog 에서 가져옴: https://velog.io/@${username}/${post.url_slug}`],
@@ -232,8 +242,7 @@ function findPostDirs(slug: string): string[] {
 
 async function importPost(
   postSlug: string,
-  seriesOrder: number,
-  series: VelogSeries,
+  placement: SeriesPlacement | undefined,
   options: ImportOptions,
 ): Promise<{ status: ImportStatus; path: string; imageCount: number }> {
   const existingDirs = findPostDirs(postSlug);
@@ -257,7 +266,7 @@ async function importPost(
     const fileNameByUrl = await downloadPostImages(post, tempDir);
     writeFileSync(
       join(tempDir, 'index.md'),
-      renderPostFile(post, series, seriesOrder, options.username, fileNameByUrl),
+      renderPostFile(post, placement, options.username, fileNameByUrl),
     );
     for (const dir of existingDirs) rmSync(dir, { recursive: true, force: true });
     renameSync(tempDir, targetDir);
@@ -282,25 +291,25 @@ function importSeriesFile(series: VelogSeries, options: ImportOptions): ImportSt
   return exists ? 'overwritten' : 'created';
 }
 
-function parseOptions(): ImportOptions {
+function parseArguments(): { options: ImportOptions; target: ImportTarget } {
   const { values } = parseArgs({
     options: {
       username: { type: 'string' },
       series: { type: 'string' },
+      post: { type: 'string' },
       force: { type: 'boolean', default: false },
     },
   });
-  if (!values.username || !values.series) {
-    throw new Error(
-      '사용법: pnpm import:velog --username <아이디> --series <시리즈 slug> [--force]',
-    );
-  }
-  return { username: values.username, seriesSlug: values.series, force: values.force ?? false };
+  if (!values.username) throw new Error(USAGE);
+  if (Boolean(values.series) === Boolean(values.post)) throw new Error(USAGE);
+
+  const options = { username: values.username, force: values.force ?? false };
+  if (values.series) return { options, target: { kind: 'series', slug: values.series } };
+  return { options, target: { kind: 'post', slug: values.post ?? '' } };
 }
 
-async function main(): Promise<void> {
-  const options = parseOptions();
-  const series = await fetchSeries(options.username, options.seriesSlug);
+async function importSeries(seriesSlug: string, options: ImportOptions): Promise<void> {
+  const series = await fetchSeries(options.username, seriesSlug);
   const seriesPosts = [...series.series_posts].sort((a, b) => a.index - b.index);
 
   console.log(`시리즈 "${series.name}" (${seriesPosts.length}편)`);
@@ -311,9 +320,24 @@ async function main(): Promise<void> {
       console.log(`  ${index}. ${post.url_slug}: 비공개 글이라 건너뜀`);
       continue;
     }
-    const result = await importPost(post.url_slug, index, series, options);
+    const placement = { seriesSlug: series.url_slug, order: index };
+    const result = await importPost(post.url_slug, placement, options);
     console.log(`  ${index}. ${result.status} ${result.path} (이미지 ${result.imageCount}개)`);
   }
+}
+
+async function importSinglePost(postSlug: string, options: ImportOptions): Promise<void> {
+  const result = await importPost(postSlug, undefined, options);
+  console.log(`글 ${result.status} ${result.path} (이미지 ${result.imageCount}개)`);
+}
+
+async function main(): Promise<void> {
+  const { options, target } = parseArguments();
+  if (target.kind === 'series') {
+    await importSeries(target.slug, options);
+    return;
+  }
+  await importSinglePost(target.slug, options);
 }
 
 main().catch((error: unknown) => {
