@@ -1,13 +1,13 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import { getPreferredScrollBehavior } from '@/lib/scroll-behavior';
 
 /** 이만큼 내려가면 버튼을 보여준다 (대략 첫 화면 높이) */
 const SHOW_AFTER_SCROLL_Y = 600;
 
 function scrollToTop() {
-  const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-  window.scrollTo({ top: 0, behavior: prefersReducedMotion ? 'auto' : 'smooth' });
+  window.scrollTo({ top: 0, behavior: getPreferredScrollBehavior() });
 }
 
 /** 글 상세에서 일정 이상 스크롤하면 오른쪽 아래에 나타나는 "맨 위로" 버튼 */

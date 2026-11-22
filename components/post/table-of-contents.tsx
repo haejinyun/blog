@@ -1,7 +1,8 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { type MouseEvent, useEffect, useState } from 'react';
 import type { TocItem } from '@/lib/content';
+import { getPreferredScrollBehavior } from '@/lib/scroll-behavior';
 
 interface TableOfContentsProps {
   items: TocItem[];
@@ -102,23 +103,71 @@ function TocList({ items, activeUrl }: TocListProps) {
   );
 }
 
-function TocLink({ item, isActive }: { item: TocItem; isActive: boolean }) {
-  if (isActive) {
-    return (
-      <a
-        href={item.url}
-        aria-current="location"
-        className="border-l-2 border-foreground pl-2 text-foreground"
-      >
-        {item.title}
-      </a>
-    );
-  }
+function isModifiedClick(event: MouseEvent<HTMLAnchorElement>): boolean {
+  return event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey;
+}
 
+/**
+ * 목차 링크를 누르면 소제목까지 부드럽게 스크롤하고 주소의 #해시를 바꾼다.
+ * 새 탭 열기(보조 키·가운데 버튼)나 소제목을 못 찾은 경우는 브라우저 기본 이동에 맡긴다.
+ * 고정 헤더에 가리지 않는 위치는 소제목의 scroll-margin-top 이 정한다.
+ */
+function scrollToHeading(event: MouseEvent<HTMLAnchorElement>, url: string): void {
+  if (isModifiedClick(event)) return;
+  const heading = document.getElementById(decodeURIComponent(url.slice(1)));
+  if (!heading) return;
+
+  event.preventDefault();
+  scrollHeadingIntoView(heading, MAX_SCROLL_CORRECTIONS);
+  history.pushState(null, '', url);
+}
+
+/** 스크롤 중에 이미지가 늦게 로드되면 소제목이 밀려난다. 도착 뒤 위치를 다시 맞추는 최대 횟수 */
+const MAX_SCROLL_CORRECTIONS = 3;
+const USER_SCROLL_EVENTS = ['wheel', 'touchstart', 'keydown', 'pointerdown'] as const;
+
+/** 소제목이 scroll-margin-top 위치에 있는지 (1px 오차 허용) */
+function isHeadingInPlace(heading: HTMLElement): boolean {
+  const scrollMarginTop = Number.parseFloat(getComputedStyle(heading).scrollMarginTop) || 0;
+  return Math.abs(heading.getBoundingClientRect().top - scrollMarginTop) <= 1;
+}
+
+/**
+ * 소제목으로 스크롤하고, 스크롤이 끝났을 때 제자리가 아니면 다시 스크롤한다.
+ * 사용자가 그 사이에 직접 스크롤하면 보정을 멈춘다. scrollend 를 지원하지 않는 브라우저는 보정 없이 한 번만 이동한다.
+ */
+function scrollHeadingIntoView(heading: HTMLElement, remainingCorrections: number): void {
+  heading.scrollIntoView({ behavior: getPreferredScrollBehavior(), block: 'start' });
+  if (remainingCorrections === 0 || !('onscrollend' in window)) return;
+
+  const controller = new AbortController();
+  const { signal } = controller;
+  for (const type of USER_SCROLL_EVENTS) {
+    window.addEventListener(type, () => controller.abort(), { once: true, signal });
+  }
+  window.addEventListener(
+    'scrollend',
+    () => {
+      controller.abort();
+      if (isHeadingInPlace(heading) || isScrolledToBottom()) return;
+      scrollHeadingIntoView(heading, remainingCorrections - 1);
+    },
+    { once: true, signal },
+  );
+}
+
+const TOC_LINK_CLASS = {
+  active: 'border-l-2 border-foreground pl-2 text-foreground',
+  inactive: 'border-l-2 border-transparent pl-2 text-muted-foreground hover:text-foreground',
+};
+
+function TocLink({ item, isActive }: { item: TocItem; isActive: boolean }) {
   return (
     <a
       href={item.url}
-      className="border-l-2 border-transparent pl-2 text-muted-foreground hover:text-foreground"
+      aria-current={isActive ? 'location' : undefined}
+      onClick={(event) => scrollToHeading(event, item.url)}
+      className={isActive ? TOC_LINK_CLASS.active : TOC_LINK_CLASS.inactive}
     >
       {item.title}
     </a>
