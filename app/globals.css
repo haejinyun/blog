@@ -102,3 +102,19 @@ body {
   --tw-prose-th-borders: var(--border);
   --tw-prose-td-borders: var(--muted-foreground);
 }
+
+/*
+ * 인라인 코드: typography 기본 스타일의 앞뒤 백틱(`)을 없애고, 흰 면 위의 작은 칩으로 보이게 한다.
+ * 코드 블록(pre) 안의 code 는 제외한다.
+ */
+.prose :where(:not(pre) > code) {
+  border-radius: 2px;
+  background-color: var(--surface);
+  padding: 0.15em 0.35em;
+  font-weight: 400;
+}
+
+.prose :where(:not(pre) > code)::before,
+.prose :where(:not(pre) > code)::after {
+  content: none;
+}

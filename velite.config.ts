@@ -1,3 +1,4 @@
+import rehypeShiki from '@shikijs/rehype';
 import rehypeRaw from 'rehype-raw';
 import rehypeSlug from 'rehype-slug';
 import { assets, defineCollection, defineConfig, s } from 'velite';
@@ -14,6 +15,20 @@ const ASSET_BASE_URL = '/static/';
  * 글은 .mdx 또는 .md. MDX 컴파일러가 파일 확장자를 보고(format: 'detect') .md 는 일반 마크다운으로 해석한다.
  * .md 의 HTML(<br> 등)은 rehype-raw 가 처리한다. MDX 전용 노드는 그대로 통과시킨다.
  */
+/**
+ * 코드 블록 문법 하이라이팅 (Shiki). 빌드할 때 HTML 로 바꿔서 브라우저에서 JS 를 실행하지 않는다.
+ * 테마는 글자색만 쓰고, 바탕은 디자인 토큰(app/globals.css 의 .prose pre)을 쓴다.
+ * 언어는 글에 나온 것만 필요할 때 불러오고(lazy), 모르는 언어나 언어 표시가 없는 블록은 일반 텍스트로 둔다.
+ */
+const shikiOptions = {
+  theme: 'vitesse-dark',
+  // pre 에 테마 배경·글자색 style 을 넣지 않는다. 바탕은 .prose pre 의 디자인 토큰을 쓴다
+  rootStyle: false,
+  lazy: true,
+  defaultLanguage: 'text',
+  fallbackLanguage: 'text',
+} as const;
+
 const rehypeRawOptions = {
   passThrough: [
     'mdxjsEsm',
@@ -234,7 +249,7 @@ export default defineConfig({
     clean: true,
   },
   mdx: {
-    rehypePlugins: [[rehypeRaw, rehypeRawOptions], rehypeSlug],
+    rehypePlugins: [[rehypeRaw, rehypeRawOptions], rehypeSlug, [rehypeShiki, shikiOptions]],
   },
   collections: { posts, series, projects, about },
   prepare: ({ posts, series, projects }) => {
