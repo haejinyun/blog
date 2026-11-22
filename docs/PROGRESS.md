@@ -10,7 +10,7 @@
 ## 현재 상태 (2026-11-22 기준, `https://paori.dev` 배포 완료)
 
 - SPEC 8장의 Phase 1~4 완료, velog 마이그레이션 1차(시리즈 1개, 7편) 완료, Vercel 배포와 도메인 연결 완료
-- 테스트: `pnpm test` 113개 통과, 14개 skip (draft 대상 없음 10개, Projects 숨김 4개) / `pnpm lint` 통과
+- 테스트: `pnpm test` 134개 통과, 13개 skip (draft 대상 없음 9개, Projects 숨김 4개) / `pnpm lint` 통과
 - About 페이지 공개 (2026-11-23, 상단 메뉴 BLOG·SERIES·ABOUT). Projects는 아직 숨김
 - git: GitHub `haejinyun/blog`(공개)의 `main`. push하면 Vercel이 자동 배포한다. **커밋은 사용자가 요청할 때만** 한다
 - 검색 등록 완료: Google Search Console(도메인 속성), 네이버 서치어드바이저. `vercel.app` → `paori.dev` 리다이렉트 완료
@@ -35,7 +35,7 @@ pnpm build && pnpm preview   # 정적 결과물 확인
    - Person JSON-LD에 직함(`jobTitle`)·SNS 링크(`sameAs`)를 넣을지, 홈 소개 문단(placeholder)
 2. **콘텐츠 다듬기**: velog 3편 description, 시리즈 설명, 태그 달지 정하기, 나머지 velog 시리즈 가져오기 (시리즈 없는 글은 스크립트 미지원)
 3. **Projects 다시 열기**: 실제 케이스 스터디 작성, `sample-*` 삭제, 메뉴 4개 복구(360px 넘침 테스트 확인)
-4. **품질·안전**: `.forbidden-strings.local` 작성 + 검사 보강, draft 테스트를 픽스처 빌드로 전환(지금 skip 10개), dev와 build의 `.velite` 분리
+4. **품질·안전**: 본문 이미지에 크기(width·height) 넣기(CLS, 목차 스크롤 밀림의 근본 원인), `.forbidden-strings.local` 작성 + 검사 보강, draft 테스트를 픽스처 빌드로 전환(지금 skip 10개), dev와 build의 `.velite` 분리
 5. **나중 (SPEC 10장, 아직 범위 아님)**: 댓글(giscus), 좋아요/조회수, 검색
 
 ### velog 마이그레이션 (1차 완료, 사용자 확인 대기)
@@ -44,7 +44,7 @@ pnpm build && pnpm preview   # 정적 결과물 확인
 - [ ] 3편 description은 velog 자동 요약(150자에서 잘림, 문장 사이 공백 없음)이라 직접 다듬기
 - [ ] 시리즈 설명: velog에 비어 있어서 시리즈 이름을 그대로 넣음 (`content/series/frontend-to-product-developer.md`)
 - [ ] 샘플 글을 지우면서 draft 글 테스트(목록·빌드 결과물·이미지 제외) 3개, draft 태그 404, 태그 클릭 테스트가 skip됨. 대상 콘텐츠가 생기면 다시 실행됨. 커버리지를 유지할지 사용자와 정하기
-- [ ] 나머지 velog 글 가져오기 (시리즈별로 `pnpm import:velog --username haejinyun --series <slug>`. 시리즈에 속하지 않은 글은 스크립트가 아직 지원하지 않음)
+- [ ] 나머지 velog 글 가져오기. 다 옮기면 `/blog`의 velog 안내(`components/post/previous-blog-notice.tsx`, `siteConfig.previousBlogUrl`)를 지운다. (시리즈는 `--series <slug>`, 시리즈 없는 글은 `--post <slug>`). `json-ld` 글은 2026-11-23에 가져옴
 
 ### 배포 후 남은 일
 - [ ] 한글 slug 글이 생기면 배포 사이트에서 열리는지 확인
@@ -138,6 +138,15 @@ pnpm build && pnpm preview   # 정적 결과물 확인
 | 2026-11-22 | About을 구조화 데이터로: `about.mdx` frontmatter에 직함·한 줄 소개·스킬·경력·코스/프로젝트·학력(`ResumeEntry` 공용 모양), 본문은 Introduce. `updated`(최종 수정일) 필드와 표시 삭제 | 사용자 결정(수정하기 쉽게). 레이아웃은 위 제목 + 아래 내용(작은 대문자 라벨), yceffort.kr/resume 일부 참고. 내용은 사용자 이력서 PDF 기준. 회사명은 공개(금지 목록 후보에서 제외), 자격증은 뺌. 사진·전화번호·생년월일 없음 |
 | 2026-11-23 | About 이력 항목마다 기술 스택 한 줄(`techStack`)과 링크(`links`, 새 탭) 추가, 상단 이메일 옆에 GitHub 주소 | 사용자 요청 (yceffort.kr/resume 방식). GitHub 링크는 연락처 영역 밖에 둬서 "연락처는 이메일만" 규칙과 테스트를 유지 |
 | 2026-11-23 | About 메뉴 공개 (Projects는 계속 숨김) | 사용자 결정. 내용 작성이 끝나서 |
+| 2026-11-23 | velog 가져오기에 `--post <slug>` 추가 (시리즈 없는 글 하나) | 시리즈에 속하지 않은 `json-ld` 글을 옮기기 위해. `--series`와 `--post`는 둘 중 하나만 |
+| 2026-11-23 | 목차를 Velite 기본 변환 대신 직접 변환 (`velite.config.ts`의 `parseTocList`) | Velite 0.4.0 버그로 굵게·기울임 소제목이 목차에 `undefined마치며`처럼 나옴. 회귀 테스트 추가 |
+| 2026-11-23 | 목차 링크를 누르면 부드럽게 스크롤 (동작 줄이기 설정이면 바로 이동). 스크롤이 끝났을 때 소제목이 제자리가 아니면 최대 3번 다시 맞춤 | 사용자 요청. 본문 이미지가 지연 로딩되면서 페이지가 길어져 목표 소제목이 밀려났음. 사용자가 직접 스크롤하면 보정 중단. `scrollend` 미지원 브라우저는 보정 없이 한 번 이동 |
+| 2026-11-23 | 글 상단의 "(수정 날짜)" 표시 삭제. `updated` 데이터는 JSON-LD `dateModified`·sitemap에 계속 씀 | 사용자 결정 |
+| 2026-11-23 | 이스터에그 편지의 `\n`을 줄바꿈으로 표시 (`whitespace-pre-line`) | 사용자 요청 |
+| 2026-11-23 | `/blog` 목록 아래에 "이전 글은 velog에서 볼 수 있어요. velog 보기 ↗" 안내 (`PreviousBlogNotice`, 주소는 `siteConfig.previousBlogUrl`) | 사용자 결정. 아직 옮기지 않은 글이 velog에 있어서. 다 옮기면 지운다. velog 원본에는 사용자가 새 주소 안내를 직접 넣음 |
+| 2026-11-23 | About의 "서버 드리븐 UI" → "Server-Driven UI" | 업계 표준 표기, 다른 기술명(JSON-LD 등)과 맞춤. 사용자 승인 |
+| 2026-11-23 | 본문 표는 가로 스크롤 상자로 감쌈 (`MdxTable`) | 모바일에서 넓은 표가 페이지 전체를 가로로 밀었음 |
+| 2026-11-23 | 인용문의 자동 따옴표·기울임·굵기 500 제거 (`app/globals.css`) | 사용자 요청. 원문 따옴표와 겹쳐 두 번 찍혔고, 한글은 기울임 글꼴이 없어 억지로 눕혀짐. Typography가 자동으로 붙이는 것은 인라인 코드 백틱(이미 제거)과 인용문 따옴표 두 가지뿐임을 확인 |
 | 2026-11-20 | 디자인 문서의 숫자 간격 토큰(`--spacing-6: 6px` 등)은 가져오지 않고 `section`(56px)·`card`(14px)·`element`(10px)로 정함 | 숫자 토큰은 Tailwind 기본 눈금(`p-6` = 24px)을 덮어씀. 범위 값(48-71px)은 CSS 값이 아니라서 범위 안의 값 하나로 |
 
 ---
@@ -183,6 +192,21 @@ pnpm build && pnpm preview   # 정적 결과물 확인
 ### Vercel에서 `Can't resolve '#site/content'`로 빌드 실패
 - 원인: Vercel Build Command가 `next build`라서 Velite가 실행되지 않음. `#site/content`는 `.velite`(git 제외, Velite 생성물)를 가리킴. 로컬은 예전에 만든 `.velite`가 남아 있어서 성공했음 (`.velite`를 지우고 `next build`로 재현 확인)
 - 해결: Vercel Build Command를 `pnpm build`로 Override (Velite → next build 순서)
+
+### 목차에 `undefined`가 붙음 (Velite 0.4.0 버그)
+- 증상: `### **마치며**`처럼 굵게·기울임이 들어간 소제목이 목차에 `undefined마치며`로 나옴 (본문 소제목은 정상)
+- 원인: Velite `s.toc()`의 기본 변환이 `text`·`inlineCode`뿐 아니라 `strong`·`emphasis` 노드의 `value`(없음)까지 이어 붙임
+- 해결: `s.toc({ original: true })`로 목차 트리만 받고 `parseTocList`가 안쪽 글자를 직접 모음. `tests/build/content-validation.spec.ts`에 회귀 테스트. TOC e2e 테스트(`목차가 모든 소제목을 가리킨다`)가 잡아냄
+
+### 목차를 눌러 부드럽게 스크롤하면 소제목을 지나쳐 멈춤
+- 원인: 본문 이미지가 `loading="lazy"`이고 크기 정보(width·height)가 없어서, 스크롤하며 지나가는 이미지가 로드될 때마다 페이지가 길어짐 (이미 계산된 도착 위치는 그대로라 소제목보다 위에서 멈춤)
+- 해결: `scrollend` 뒤 소제목 위치를 확인해서 다시 스크롤 (`components/post/table-of-contents.tsx`)
+- 남은 근본 원인: 크기 없는 이미지는 읽는 중에도 화면이 밀림(CLS). 빌드할 때 이미지 크기를 넣는 방법을 검토할 만함
+
+### 모바일에서 글 상세가 가로로 넘침 (표)
+- 증상: 375px 화면에서 `json-ld` 글의 페이지 너비가 446px. 페이지 전체가 옆으로 밀림
+- 원인: 본문 표에 줄바꿈 안 되는 내용(인라인 코드)이 있으면 표가 화면보다 넓어짐. 코드 블록(`pre`)은 자체 가로 스크롤이 있지만 표는 없었음
+- 해결: MDX `table`을 가로 스크롤 상자(`overflow-x-auto break-keep`)로 감쌈 (`components/mdx/mdx-content.tsx`의 `MdxTable`). 모든 공개 글을 360px로 열어 가로 넘침을 검사하는 테스트 추가 (`tests/e2e/mobile-layout.spec.ts`)
 
 ### velog 가져오기
 - 공개 API `https://v2.velog.io/graphql`은 로그인 없이 공개 글을 읽을 수 있음 (v3 주소는 응답 없음). `series(username, url_slug)`, `post(username, url_slug)` 쿼리 사용
@@ -236,4 +260,6 @@ pnpm build && pnpm preview   # 정적 결과물 확인
 - **사이트 이름·글자 크기**: 사이트 이름 `paori`, 글자 크기 토큰 축소(`heading-sm` 추가), 모바일 메뉴 간격
 - **푸터 이스터에그**: 파오리 아이콘 + 모달(샘플 내용), 테스트 2개 추가
 - **About 작성**: 구조화 스키마(`velite.config.ts`의 `resumeEntry`), `components/about/*`(hero, section, resume-entry-list), `formatResumePeriod`, 테스트 4개 추가
+- **목차·글 상단·이스터에그 (2026-11-23)**: 목차 부드러운 스크롤 + 위치 보정(`lib/scroll-behavior.ts`를 맨 위로 버튼과 공용), 수정일 표시 삭제, 편지 줄바꿈, 테스트 3개 추가
+- **velog 글 1편 추가 (2026-11-23)**: `--post` 옵션, `json-ld` 글(이미지 5개, 태그 JSON-LD·geo) 가져옴, 민감 정보 검사 통과, 목차 `undefined` 버그 수정 + 테스트 1개
 - **코드 표시**: Shiki 하이라이팅, 인라인 코드 백틱 제거, 테스트 2개 추가(`tests/e2e/code.spec.ts`). 검색 등록·vercel.app 리다이렉트 완료(사용자)
