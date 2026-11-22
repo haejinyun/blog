@@ -4,10 +4,9 @@ import Image from 'next/image';
 import { type MouseEvent, useRef } from 'react';
 import siteLogo from './site-logo.png';
 
-/** 파오리를 찾은 사람에게 보내는 편지 */
 const LETTER_PARAGRAPHS = [
-  '당신은 좋아하는 캐릭터가 있나요? 최근에는 치이카와가 창궐하여 모든 게 "우나~!", "뿌릿", "히야~!"로 범벅이 되고 있습니다. 그러나 근-본은 포켓몬과 디지몬이라고 생각합니다. 근데 전 포켓몬이 더 좋아요.',
-  '디지몬은 뭐랄까요... 잼민이 시절 디지몬 게임을 하려고 컴퓨터 앞에 줄을 섰지만, 영원히 비켜 주지 않는 집안의 어떤 존재 때문에 멀어지게 되었습니다. 그리고는 닌텐도로 피신했죠... 그렇게 포켓몬을 사랑하게 되었어요.',
+  '당신은 좋아하는 캐릭터가 있나요? \n최근에는 치이카와가 창궐하여 모든 게 "우나~!", "뿌릿", "히야~!"로 범벅이 되고 있습니다. 그러나 근-본은 포켓몬과 디지몬이라고 생각합니다.',
+  '디지몬은... 아픈 추억이 있기에 그리 달갑진 않습니다. 잼민이 시절 디지몬 게임을 하려고 컴퓨터 옆에 줄을 섰지만, 영원히 비켜 주지 않는 집안의 어떤 연장자에 의해 멀어지게 되었습니다. 그리곤 닌텐도로 피신했죠... 그렇게 디아루가와 펄기아를 사랑하게 되었어요. (현 최애는 파오리)',
   '여러분은 어떤 캐릭터를 좋아하시나요? 귀여운 건 정신 건강에 매우 좋습니다. 감히 추천드리자면, 좋아하는 걸 꼬옥 마음에 품고 지내 보세요.',
   '방문해 주셔서 감사합니다. 즐거운 하루 되십쇼.',
 ];
@@ -57,11 +56,12 @@ export function PaoriEasterEgg() {
               className="[image-rendering:pixelated]"
             />
             <h2 id="paori-easter-egg-title" className="text-body">
-              꽥! 파오리를 찾았어요
+              꽥! 파오리를 찾았어요.
             </h2>
           </div>
 
-          <div className="flex flex-col gap-3 leading-relaxed">
+          {/* whitespace-pre-line: 편지 문자열 안의 \n 을 줄바꿈으로 보여준다 */}
+          <div className="flex flex-col gap-3 leading-relaxed whitespace-pre-line">
             {LETTER_PARAGRAPHS.map((paragraph) => (
               <p key={paragraph}>{paragraph}</p>
             ))}

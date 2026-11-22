@@ -82,6 +82,15 @@ test.describe('푸터 파오리 이스터에그', () => {
     await expect(dialog).toBeHidden();
   });
 
+  test('편지 문장 안의 줄바꿈이 화면에서도 줄바꿈으로 보인다', async ({ page }) => {
+    await page.goto('/');
+    await page.getByRole('contentinfo').getByRole('button', { name: '파오리' }).click();
+
+    const firstParagraph = page.getByRole('dialog').locator('p').first();
+    // biome-ignore lint/performance/useDomNodeTextContent: 화면에 그려진 줄바꿈을 확인해야 해서 innerText 를 쓴다 (textContent 는 CSS 와 상관없이 \n 을 돌려줌)
+    expect(await firstParagraph.innerText()).toContain('\n');
+  });
+
   test('닫기 버튼으로 모달을 닫는다', async ({ page }) => {
     await page.goto('/');
     await page.getByRole('contentinfo').getByRole('button', { name: '파오리' }).click();
