@@ -1,0 +1,26 @@
+---
+title: "haejinlog"
+description: "velog를 대체하는 정적 블로그. 블로그, 포트폴리오, 이력을 한 사이트에 담았다"
+startDate: 2026-09
+role: "개인 프로젝트 · 기획/개발 전담"
+techStack: [Next.js, TypeScript, Tailwind CSS, Velite, Playwright]
+links:
+  - { label: GitHub, url: "https://github.com/haejinyun" }
+featured: true
+featuredOrder: 1
+---
+
+> placeholder: 실제 케이스 스터디는 나중에 작성합니다.
+
+## 문제
+
+외부 서비스에 글을 맡기면 서비스가 사라질 때 글도 함께 사라진다.
+
+## 접근
+
+- 완전 정적 export로 어떤 호스팅에서도 열리게 한다.
+- 콘텐츠 소스를 Repository 인터페이스 뒤에 숨긴다.
+
+## 결과
+
+빌드 검증과 e2e 테스트로 콘텐츠 규칙 위반을 빌드 단계에서 막는다.
