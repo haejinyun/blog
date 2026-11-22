@@ -10,7 +10,7 @@
 ## 현재 상태 (2026-11-22 기준, `https://paori.dev` 배포 완료)
 
 - SPEC 8장의 Phase 1~4 완료, velog 마이그레이션 1차(시리즈 1개, 7편) 완료, Vercel 배포와 도메인 연결 완료
-- 테스트: `pnpm test` 134개 통과, 13개 skip (draft 대상 없음 9개, Projects 숨김 4개) / `pnpm lint` 통과
+- 테스트: `pnpm test` 135개 통과, 13개 skip (draft 대상 없음 9개, Projects 숨김 4개) / `pnpm lint` 통과
 - About 페이지 공개 (2026-11-23, 상단 메뉴 BLOG·SERIES·ABOUT). Projects는 아직 숨김
 - git: GitHub `haejinyun/blog`(공개)의 `main`. push하면 Vercel이 자동 배포한다. **커밋은 사용자가 요청할 때만** 한다
 - 검색 등록 완료: Google Search Console(도메인 속성), 네이버 서치어드바이저. `vercel.app` → `paori.dev` 리다이렉트 완료
@@ -47,6 +47,7 @@ pnpm build && pnpm preview   # 정적 결과물 확인
 - [ ] 나머지 velog 글 가져오기. 다 옮기면 `/blog`의 velog 안내(`components/post/previous-blog-notice.tsx`, `siteConfig.previousBlogUrl`)를 지운다. (시리즈는 `--series <slug>`, 시리즈 없는 글은 `--post <slug>`). `json-ld` 글은 2026-11-23에 가져옴
 
 ### 배포 후 남은 일
+- [ ] Vercel 대시보드 → 프로젝트 → Analytics 탭에서 Web Analytics 켜기 (안 켜면 배포 사이트에서도 스크립트가 404)
 - [ ] 한글 slug 글이 생기면 배포 사이트에서 열리는지 확인
 
 ### 사용자가 채울 콘텐츠
@@ -147,6 +148,7 @@ pnpm build && pnpm preview   # 정적 결과물 확인
 | 2026-11-23 | About의 "서버 드리븐 UI" → "Server-Driven UI" | 업계 표준 표기, 다른 기술명(JSON-LD 등)과 맞춤. 사용자 승인 |
 | 2026-11-23 | 본문 표는 가로 스크롤 상자로 감쌈 (`MdxTable`) | 모바일에서 넓은 표가 페이지 전체를 가로로 밀었음 |
 | 2026-11-23 | 인용문의 자동 따옴표·기울임·굵기 500 제거 (`app/globals.css`) | 사용자 요청. 원문 따옴표와 겹쳐 두 번 찍혔고, 한글은 기울임 글꼴이 없어 억지로 눕혀짐. Typography가 자동으로 붙이는 것은 인라인 코드 백틱(이미 제거)과 인용문 따옴표 두 가지뿐임을 확인 |
+| 2026-11-23 | 방문 통계로 Vercel Web Analytics 추가 (`@vercel/analytics` 2.0.1 고정, 루트 layout `<Analytics />`) | 사용자 요청. 쿠키 없음, 실패해도 본문 영향 없음(테스트). SPEC 2·12장. 대시보드에서 Analytics 활성화 필요. 좋아요/조회수(SPEC 10장)와는 별개 |
 | 2026-11-20 | 디자인 문서의 숫자 간격 토큰(`--spacing-6: 6px` 등)은 가져오지 않고 `section`(56px)·`card`(14px)·`element`(10px)로 정함 | 숫자 토큰은 Tailwind 기본 눈금(`p-6` = 24px)을 덮어씀. 범위 값(48-71px)은 CSS 값이 아니라서 범위 안의 값 하나로 |
 
 ---
