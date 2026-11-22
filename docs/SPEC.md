@@ -10,13 +10,10 @@
 
 ## 2. 현재 범위
 
-이번 작업은 로컬에서 완성하는 것까지다.
-
-- 로컬에서 dev로 개발하고, build로 정적 파일(out/)을 만들고, 그 결과물을 로컬 정적 서버로 띄워 확인한다.
-- 글은 직접 작성한 샘플 글로 채운다.
-- 배포, 도메인 연결, 댓글은 이번 범위가 아니다. (10장 참고)
-- velog 마이그레이션은 사용자 요청으로 범위에 넣었다 (2026-11-20). 1차로 시리즈 1개(`frontend-to-product-developer`, 7편)만 가져와 검증한다. 11장 참고
-- 단, 나중에 배포할 때 코드를 고치지 않아도 되도록 사이트 URL은 환경변수로 받는다.
+- 로컬에서 dev로 개발하고, build로 정적 파일(`out/`)을 만들어 Vercel에 배포한다. 배포는 사용자 요청으로 범위에 넣었다 (2026-11-22). 12장 참고
+- 사이트 URL은 환경변수로 받는다. 배포 환경에서 코드를 고치지 않고 주소를 바꾸기 위해서다.
+- velog 마이그레이션은 사용자 요청으로 범위에 넣었다 (2026-11-20). 11장 참고
+- 댓글, 좋아요/조회수, 검색은 아직 범위가 아니다. 10장 참고
 
 ## 3. 비목표 (하지 않는 것)
 
@@ -26,7 +23,7 @@
 - 다국어 (영어 버전 등)
 - 모노레포, 블로그 외 다른 앱
 - 자체 마크다운 파서 (기존 라이브러리 + remark/rehype 플러그인으로 해결)
-- 배포 설정 파일, CI/CD 워크플로 작성
+- 배포 설정 파일(`vercel.json`), CI/CD 워크플로 작성. 배포는 Vercel Git 연동과 대시보드 설정으로 한다 (12장)
 
 ## 4. 결정 사항 (변경 금지)
 
@@ -42,7 +39,8 @@
 | Lint / Format | Biome |
 | 테스트 | Playwright (빌드 결과물 e2e + 빌드 검증) |
 | URL 형식 | `trailingSlash: false` (`/blog/<slug>`, 빌드 결과 `out/blog/<slug>.html`) |
-| 사이트 URL | 환경변수 `NEXT_PUBLIC_SITE_URL`, 기본값 `http://localhost:3000` |
+| 사이트 URL | 환경변수 `NEXT_PUBLIC_SITE_URL`, 기본값 `http://localhost:3000`, 운영 `https://paori.dev` |
+| 배포 | Vercel (`main`에 push하면 자동 배포), 도메인 `paori.dev` (2026-11-22 사용자 결정) |
 
 ### 스크립트
 
@@ -251,72 +249,16 @@ components/
 
 ## 8. 구현 단계
 
-각 Phase가 끝나면 완료 조건을 모두 확인한 뒤 다음 Phase로 넘어간다.
-
-### Phase 1 — 기반 ✅
-
-- 프로젝트 셋업, lint/format, `output: 'export'`, 4장의 스크립트
-- `lib/config.ts`
-- PostRepository 파일 시스템 구현체 + 샘플 글 3개 (서로 다른 날짜 폴더, 이미지 1개 이상 포함)
-- `/blog`, `/blog/[slug]`
-
-완료 조건
-
-- [x] dev로 글 목록과 상세가 열린다
-- [x] build가 성공하고 out/에 글 HTML이 생성된다
-- [x] preview로 띄운 결과물에서 글 목록과 상세가 열린다
-- [x] 페이지 코드에 fs, MDX 라이브러리 import가 없다
-- [x] draft 글은 목록과 빌드 결과에 없다
-- [x] 서로 다른 날짜 폴더에 같은 slug를 넣으면 빌드가 실패한다
-- [x] 글 폴더 안 이미지가 preview 결과물에서도 정상 표시된다
-
-### Phase 2 — 탐색 ✅
-
-- 태그, 시리즈(SeriesRepository), TOC, 이전/다음 글
-- 샘플 시리즈 1개 (글 2개 이상)
-
-완료 조건
-
-- [x] /series/[slug]에 시리즈 소개 본문과 글 목록이 순서대로 보인다
-- [x] 시리즈 글에 같은 시리즈의 이전/다음 편 링크가 보인다
-- [x] 존재하지 않는 시리즈를 참조한 글이 있으면 빌드가 실패한다
-- [x] 존재하지 않는 slug/태그는 404 페이지를 낸다
-
-### Phase 3 — SEO ✅
-
-- metadata, JSON-LD, sitemap, robots, RSS, OG 이미지
-
-완료 조건
-
-- [x] 모든 글 HTML에 canonical과 BlogPosting JSON-LD가 있다
-- [x] NEXT_PUBLIC_SITE_URL을 바꿔 빌드하면 canonical, sitemap, RSS의 URL이 모두 따라 바뀐다
-- [x] 빌드 결과물에 localhost가 아닌 하드코딩된 도메인이 없다
-- [x] sitemap에 모든 공개 글이 있다
-- [x] RSS가 유효한 XML이다
-
-### Phase 4 — 포트폴리오 / 이력 ✅
-
-- `/projects`, `/about` (콘텐츠는 placeholder)
-- 홈(`/`) 완성
-
-완료 조건
-
-- [x] 6장의 공개 금지 정보가 빌드 결과물 어디에도 없다 (전화번호는 정규식, 주소·내부 설정값은 git 제외 파일 `.forbidden-strings.local`로 검사)
-- [x] 홈에서 최근 글과 대표 프로젝트로 이동할 수 있다
+Phase 1(기반), 2(탐색), 3(SEO), 4(포트폴리오/이력)는 모두 끝났다 (2026-11-20). 각 Phase의 완료 조건은 `tests/`의 빌드 검증과 e2e 테스트로 계속 확인하고, 진행 이력은 `docs/PROGRESS.md`에 있다.
 
 ## 9. 미정 사항 (에이전트가 임의 결정 금지)
 
-- [x] 스타일링 방식 → Tailwind CSS v4
-- [x] 디자인 톤 → `docs/DESIGN.md`(Telescope)의 색상·테두리·모서리·간격 적용, 레이아웃과 폰트(Pretendard)는 유지 (2026-11-20)
-- [x] 폰트 → Pretendard
-- [x] 패키지 매니저 → pnpm
+지금은 없다. 스타일링(Tailwind CSS v4), 폰트(Pretendard), 패키지 매니저(pnpm)는 4장, 디자인 톤은 `docs/DESIGN.md`로 정해졌다. 새로 생기면 여기에 적는다.
 
-## 10. 다음 단계 (이번 범위 아님, 구현하지 않음)
+## 10. 다음 단계 (아직 범위 아님, 구현하지 않음)
 
 | 작업 | 메모 |
 | --- | --- |
-| 배포 | 정적 결과물이라 Vercel / Cloudflare Pages 등 어디든 가능. 호스팅·도메인은 이때 결정 |
-| velog 마이그레이션 | 범위로 옮김 (11장) |
 | 댓글 | giscus (GitHub Discussions). 공개 레포와 Discussions 설정이 필요해서 배포 후 진행. 스크립트 로드가 실패해도 본문은 정상 렌더링 |
 | 좋아요/조회수 | ReactionRepository 인터페이스 + 서버리스 KV (Upstash / Cloudflare) |
 | 검색 | 빌드 시 인덱스 생성 |
@@ -330,4 +272,14 @@ components/
 - 시리즈는 `content/series/<시리즈 slug>.md`로 만든다. velog 시리즈 설명이 비어 있으면 시리즈 이름을 설명으로 쓴다.
 - 재실행해도 안전해야 한다. 이미 있는 글과 시리즈 파일은 건너뛰어 로컬에서 고친 내용을 지키고, `--force`를 줄 때만 덮어쓴다.
 - frontmatter 대응: title ← `title`, description ← `short_description`, date ← `released_at`, updated ← `updated_at` (한국 시간 날짜가 다를 때만), tags ← `tags`, series·seriesOrder ← 시리즈와 순서, thumbnail ← `thumbnail`
-- 1차 가져오기가 검증되면 샘플 글과 샘플 시리즈를 지운다.
+
+## 12. 배포 (2026-11-22 범위 추가)
+
+- 호스팅은 Vercel. GitHub `haejinyun/blog`의 `main`에 push하면 자동으로 배포된다.
+- Vercel 설정 (설정 파일 없이 대시보드에서 관리)
+  - Framework Preset: Next.js. 정적 export(`out/`)와 `/blog/foo` → `foo.html` 연결을 자동으로 처리한다. Output Directory는 기본값 그대로 둔다
+  - Build Command: `pnpm build` (Override 필수. `next build`만 실행하면 Velite가 돌지 않아 빌드가 실패한다)
+  - 환경 변수: `NEXT_PUBLIC_SITE_URL=https://paori.dev`, `ENABLE_EXPERIMENTAL_COREPACK=1` (`package.json`의 pnpm 버전을 그대로 쓰기 위해)
+- 도메인은 `paori.dev`(가비아). 네임서버는 가비아를 쓰고 A(`@`)와 CNAME(`www`) 레코드로 Vercel에 연결한다.
+- 대표 주소는 `https://paori.dev`. `www`, `http`, `vercel.app` 주소는 308로 대표 주소에 리다이렉트한다. HTTPS 인증서는 Vercel이 자동으로 발급·갱신한다.
+- 검색 등록: Google Search Console은 도메인 속성(DNS TXT 인증), 네이버 서치어드바이저는 메타 태그 인증(`lib/config.ts`의 `searchVerification`). 둘 다 `sitemap.xml`을 제출한다.

@@ -7,19 +7,12 @@
 
 ---
 
-## 현재 상태 (2026-11-20 기준, 디자인 1차 적용 완료)
+## 현재 상태 (2026-11-22 기준, `https://paori.dev` 배포 완료)
 
-| Phase | 상태 | 비고 |
-| --- | --- | --- |
-| Phase 1 — 기반 | ✅ 완료 | |
-| Phase 2 — 탐색 | ✅ 완료 | `/series` 목록 페이지 추가 (스펙 외, 승인됨) |
-| Phase 3 — SEO | ✅ 완료 | OG 이미지는 `og.png` route handler 방식 (아래 문제와 해결 참고) |
-| Phase 4 — 포트폴리오 / 이력 | ✅ 완료 | 콘텐츠는 placeholder (프로젝트 3개 + draft 1개, about) |
-
-- 테스트: `pnpm test` 102개 통과, 15개 skip (draft 없음 10개, Projects·About 숨김 5개) / `pnpm lint` 통과
-- **SPEC 8장의 Phase 1~4가 모두 끝남.** velog 마이그레이션 1차(시리즈 1개, 7편) 완료, 샘플 글·시리즈 삭제
-- 테스트 7개 skip: draft 글·태그가 없어서 (아래 "다음 할 일" 참고)
-- git: `git init`만 함. **커밋은 사용자가 요청할 때만** 한다 (Phase마다 커밋하지 않음).
+- SPEC 8장의 Phase 1~4 완료, velog 마이그레이션 1차(시리즈 1개, 7편) 완료, Vercel 배포와 도메인 연결 완료
+- 테스트: `pnpm test` 103개 통과, 15개 skip (draft 대상 없음 10개, Projects·About 숨김 5개) / `pnpm lint` 통과
+- git: GitHub `haejinyun/blog`(공개)의 `main`. push하면 Vercel이 자동 배포한다. **커밋은 사용자가 요청할 때만** 한다
+- 커밋 대기 중인 변경: README 영어 버전, 네이버 인증 메타 태그, SPEC·PROGRESS 정리, 사이트 이름 `paori`, 글자 크기 축소, 푸터 파오리 이스터에그
 
 ## 작업 재개 방법
 
@@ -43,9 +36,14 @@ pnpm build && pnpm preview   # 정적 결과물 확인
 - [ ] 샘플 글을 지우면서 draft 글 테스트(목록·빌드 결과물·이미지 제외) 3개, draft 태그 404, 태그 클릭 테스트가 skip됨. 대상 콘텐츠가 생기면 다시 실행됨. 커버리지를 유지할지 사용자와 정하기
 - [ ] 나머지 velog 글 가져오기 (시리즈별로 `pnpm import:velog --username haejinyun --series <slug>`. 시리즈에 속하지 않은 글은 스크립트가 아직 지원하지 않음)
 
+### 배포 후 남은 일
+- [ ] `<프로젝트>.vercel.app` 주소도 `paori.dev`로 308 리다이렉트 (Vercel Domains → Edit)
+- [ ] Google Search Console: 도메인 속성으로 `paori.dev` 등록, 가비아 DNS에 TXT 레코드(`@`) 추가 후 인증, `https://paori.dev/sitemap.xml` 제출
+- [ ] 네이버 서치어드바이저: 메타 태그를 넣은 커밋을 배포한 뒤 소유 확인, sitemap과 RSS(`/rss.xml`) 제출
+- [ ] 한글 slug 글이 생기면 배포 사이트에서 열리는지 확인
+
 ### 사용자가 채울 콘텐츠
-- [ ] Projects·About 다시 열기: 콘텐츠를 채운 뒤 `[숨김]`으로 검색해서 `app/page.tsx`, `components/layout/site-header.tsx` 주석과 `tests/e2e`의 `test.skip`을 되돌리기
-- [ ] README 작성 (첫 push 후, 지금은 GitHub가 만든 `# blog` 한 줄)
+- [ ] Projects·About 다시 열기: 콘텐츠를 채운 뒤 `[숨김]`으로 검색해서 `app/page.tsx`, `components/layout/site-header.tsx` 주석과 `tests/e2e`의 `test.skip`을 되돌리기. 메뉴가 4개로 늘면 360px 화면 넘침 테스트(`tests/e2e/header.spec.ts`)를 꼭 확인 (모바일 메뉴 간격 `gap-1`)
 - [ ] `content/projects/*`: placeholder 프로젝트를 실제 케이스 스터디로 교체 (`sample-*` 폴더는 삭제)
 - [ ] `content/about.mdx`: 실제 이력. PDF가 생기면 `content/`에 두고 frontmatter `resumePdf: ./resume.pdf` (Velite `s.file()`이 `public/static/`으로 복사)
 - [ ] 홈 소개 문구 (`app/page.tsx`의 placeholder 문단)
@@ -121,6 +119,12 @@ pnpm build && pnpm preview   # 정적 결과물 확인
 | 2026-11-20 | 강조색 라임(`#e3f794`)은 현재 메뉴 배경에만 (`NavigationLink`, `aria-current="page"`). 링크 hover는 밑줄 | 사용자 결정. 디자인 문서가 라임을 한 곳에만 쓰라고 함. 라임 글자는 바탕 위에서 안 보여서 글자색으로 쓰지 않음 |
 | 2026-11-20 | 헤더를 상단 고정(`sticky top-0`), 맨 오른쪽(메뉴 뒤)에 GitHub 아이콘 링크(새 탭), 글 상세에만 "맨 위로" 버튼(600px 이상 스크롤하면 표시, 오른쪽 아래) | 사용자 요청. 아이콘은 의존성 없이 인라인 SVG(`components/icons/github-icon.tsx`). 고정 헤더에 가리지 않게 목차 sticky 위치를 `top-24`로 내림. 360px 화면에서 헤더가 넘치지 않게 모바일 간격을 줄임 (테스트로 확인) |
 | 2026-11-20 | 목차에서 지금 읽는 섹션을 강조 (검정 글자 + 왼쪽 2px 검정 선, `aria-current="location"`). 화면 위 120px 안으로 지나간 마지막 소제목, 페이지 끝이면 마지막 소제목 | 사용자 제안. 라임은 현재 메뉴 전용이라 쓰지 않음. 스크롤 이벤트 + requestAnimationFrame (IntersectionObserver보다 "마지막으로 지나간 소제목" 계산이 단순) |
+| 2026-11-22 | 배포는 Vercel, 도메인 `paori.dev`(가비아), 대표 주소는 www 없는 루트 도메인 | 사용자 결정. 정적 export와 `trailingSlash: false`(`/blog/foo` → `foo.html`)를 추가 설정 없이 지원. SPEC 2·3·4·12장에 반영 |
+| 2026-11-22 | 검색 등록: Google은 도메인 속성(DNS TXT), 네이버는 메타 태그(`siteConfig.searchVerification.naver` → 루트 layout `verification.other`) | Google 도메인 속성은 코드 수정 없이 www·http까지 포함. 네이버는 도메인 속성이 없음. 인증 값은 비밀 정보가 아니라 레포에 둠 |
+| 2026-11-22 | 사이트 이름 `paori` (본명은 글쓴이 정보로: 푸터, About, JSON-LD, 홈 첫 문장 "안녕하세요, 윤해진입니다."는 유지) | 사용자 결정. 도메인 `paori.dev`, 로고, SNS 이름과 맞춤. 레포 이름(`blog`)과 `package.json` name은 그대로 |
+| 2026-11-22 | 글자 크기 축소: 본문 19→16, 목록 제목·요약 23→18, 제목 55·57→38·40, 모바일 제목 36→28(`heading-sm` 토큰 추가), 라벨 12 유지. 자간은 em으로 | 사용자 요청("전체적으로 30% 정도 줄이기"). 본문은 한글 가독성 때문에 16px 하한 |
+| 2026-11-22 | 푸터 저작권 옆 파오리 아이콘(16px, 픽셀 렌더링)을 누르면 이스터에그 모달 (`components/layout/paori-easter-egg.tsx`, 네이티브 `<dialog>`) | 사용자 요청. `<dialog>`라 Esc 닫기·포커스 처리가 기본 제공. 배경 클릭으로도 닫힘. 내용은 사용자가 쓴 편지(포켓몬 이야기). 한글이 단어 중간에서 끊기지 않게 `break-keep`. README 끝에도 `<details>`로 접힌 이스터에그 한 줄 |
+| 2026-11-22 | README는 영어로 짧게 (소개 한 줄 + Development + Deployment + Tech Stack + Author) | 사용자 결정. 참고: github.com/yceffort/blog |
 | 2026-11-22 | Projects·About을 콘텐츠 준비 전까지 숨김: 상단 메뉴 항목과 홈 대표 프로젝트 섹션을 코드 주석으로 막음(`[숨김]` 표시). 관련 테스트 5개 `test.skip` | 사용자 결정(설정값 방식 대신 주석). 페이지(`/projects`, `/about`)는 빌드되고 sitemap에도 남아 있어 주소로는 접근 가능 |
 | 2026-11-22 | 작성 중인 글·프로젝트는 `content/drafts/`(git 제외)에서 쓰고 발행할 때 옮김. placeholder `draft-sample-project`는 `content/drafts/projects/`로 이동 | 사용자 결정: 공개 레포에는 화면에 보일 완성본만. 경로로 구분해야 `.gitignore`가 동작함. 폴더 이름 접두어 방식은 `draft` 값과 어긋나면 완성 글이 git에서 빠질 수 있어서 피함. 단점: draft는 백업이 없음 |
 | 2026-11-22 | 디자인 레퍼런스 원문은 git에서 제외(`docs/*.local.md`), 공개용 `docs/DESIGN.md`는 직접 쓴 적용 규칙 요약 | 공개 레포에 외부 글을 통째로 올리지 않기 위해 (저작권). 비상업 사용이어도 허락 없는 전문 공개는 피함. 사용자 결정 |
@@ -165,6 +169,10 @@ pnpm build && pnpm preview   # 정적 결과물 확인
 - `output: 'export'`에서 `distDir`을 지정하면 **export 위치만** 바뀌고 빌드 산출물은 `.next`에 남음 (`next/dist/export/utils.js`의 `getBuildDistDir`)
 - 테스트는 `mode: 'serial'`. 병렬이면 워커마다 `beforeAll`이 돌아 빌드가 동시에 여러 번 실행됨
 - 홈 canonical은 `trailingSlash: false` 때문에 Next가 끝의 `/`를 뗀다 (`http://host`). sitemap과 RSS는 `http://host/`. 둘 다 같은 주소라 그대로 둠
+
+### Vercel에서 `Can't resolve '#site/content'`로 빌드 실패
+- 원인: Vercel Build Command가 `next build`라서 Velite가 실행되지 않음. `#site/content`는 `.velite`(git 제외, Velite 생성물)를 가리킴. 로컬은 예전에 만든 `.velite`가 남아 있어서 성공했음 (`.velite`를 지우고 `next build`로 재현 확인)
+- 해결: Vercel Build Command를 `pnpm build`로 Override (Velite → next build 순서)
 
 ### velog 가져오기
 - 공개 API `https://v2.velog.io/graphql`은 로그인 없이 공개 글을 읽을 수 있음 (v3 주소는 응답 없음). `series(username, url_slug)`, `post(username, url_slug)` 쿼리 사용
@@ -213,3 +221,7 @@ pnpm build && pnpm preview   # 정적 결과물 확인
 - `docs/DESIGN.md`를 적용 규칙 요약으로 교체, 원문은 `docs/DESIGN.reference.local.md`(git 제외)
 - draft 분리: `content/drafts/` 추가(git 제외), placeholder draft 프로젝트 이동, SPEC 콘텐츠 규칙·폴더 구조 수정
 - Projects·About 메뉴와 홈 대표 프로젝트 섹션 주석 처리(숨김)
+- **배포**: Vercel 배포, 도메인 `paori.dev`(가비아) 연결, 배포 결과물 주소·리다이렉트·HTTPS 확인
+- **배포 마무리**: 네이버 서치어드바이저 메타 태그 + 테스트 1개, README Deployment 섹션, SPEC에 배포 범위·결정(2·3·4·12장) 반영하고 완료된 Phase 조건·미정 사항·다음 단계 항목 정리, PROGRESS 완료 항목 정리
+- **사이트 이름·글자 크기**: 사이트 이름 `paori`, 글자 크기 토큰 축소(`heading-sm` 추가), 모바일 메뉴 간격
+- **푸터 이스터에그**: 파오리 아이콘 + 모달(샘플 내용), 테스트 2개 추가
