@@ -74,12 +74,30 @@ export interface ProjectRepository {
   getFeaturedProjects(): Promise<ProjectMeta[]>; // featured 만, featuredOrder 오름차순
 }
 
+/** 이력 항목. 경력, 코스·프로젝트, 학력이 같은 모양을 쓴다 */
+export interface ResumeEntry {
+  title: string; // 회사·과정·학교 이름
+  role?: string; // 직무
+  startDate: string; // 'YYYY-MM'
+  endDate?: string; // 없으면 진행 중
+  summary?: string; // 한 줄 설명 (서비스, 전공 등)
+  team?: string; // 팀 구성
+  highlights: string[]; // 한 일
+  techStack: string[]; // 항목 아래 한 줄로 표시. 없으면 숨김
+  links: ProjectLink[]; // 서비스·저장소 링크. 없으면 숨김
+}
+
 export interface About {
   title: string;
   description: string;
-  updated: string; // ISO 8601, 이력 최종 수정일
+  role: string; // 이름 위 직함 (Frontend Engineer)
+  headline: string; // 이름 아래 한 줄 소개
+  skills: string[];
+  work: ResumeEntry[];
+  projects: ResumeEntry[]; // Courses / Projects
+  education: ResumeEntry[];
   resumePdf?: string; // 이력서 PDF 경로. 없으면 다운로드 링크를 숨긴다
-  body: string;
+  body: string; // Introduce 본문
 }
 
 export interface AboutRepository {

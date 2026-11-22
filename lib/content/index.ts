@@ -15,6 +15,7 @@ export type {
   ProjectLink,
   ProjectMeta,
   ProjectRepository,
+  ResumeEntry,
   Series,
   SeriesRepository,
   TocItem,

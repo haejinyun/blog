@@ -6,7 +6,12 @@ export function createVeliteAboutRepository(source: VeliteAbout): AboutRepositor
   const about = {
     title: source.title,
     description: source.description,
-    updated: source.updated,
+    role: source.role,
+    headline: source.headline,
+    skills: source.skills,
+    work: source.work,
+    projects: source.projects,
+    education: source.education,
     resumePdf: source.resumePdf,
     body: source.body,
   };

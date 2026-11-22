@@ -26,3 +26,10 @@ export function formatPeriod(startDate: string, endDate?: string): string {
   const end = endDate ? formatYearMonth(endDate) : '진행 중';
   return `${formatYearMonth(startDate)} – ${end}`;
 }
+
+/** 이력 기간 표시 ('2023.06 ~ 2024.03', 끝이 없으면 '~ 현재') */
+export function formatResumePeriod(startDate: string, endDate?: string): string {
+  const toDotted = (yearMonth: string) => yearMonth.replace('-', '.');
+  const end = endDate ? toDotted(endDate) : '현재';
+  return `${toDotted(startDate)} ~ ${end}`;
+}

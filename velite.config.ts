@@ -115,6 +115,19 @@ const projects = defineCollection({
     })),
 });
 
+/** 이력 항목 (경력, 코스·프로젝트, 학력 공용) */
+const resumeEntry = s.object({
+  title: s.string().min(1),
+  role: s.string().min(1).optional(),
+  startDate: s.string().regex(YEAR_MONTH_PATTERN, 'YYYY-MM 형식이어야 합니다'),
+  endDate: s.string().regex(YEAR_MONTH_PATTERN, 'YYYY-MM 형식이어야 합니다').optional(),
+  summary: s.string().min(1).optional(),
+  team: s.string().min(1).optional(),
+  highlights: s.array(s.string().min(1)).default([]),
+  techStack: s.array(s.string().min(1)).default([]),
+  links: s.array(s.object({ label: s.string().min(1), url: s.string().url() })).default([]),
+});
+
 const about = defineCollection({
   name: 'About',
   pattern: 'about.mdx',
@@ -122,7 +135,12 @@ const about = defineCollection({
   schema: s.object({
     title: s.string().min(1),
     description: s.string().min(1),
-    updated: s.isodate(),
+    role: s.string().min(1),
+    headline: s.string().min(1),
+    skills: s.array(s.string().min(1)).min(1),
+    work: s.array(resumeEntry).default([]),
+    projects: s.array(resumeEntry).default([]),
+    education: s.array(resumeEntry).default([]),
     resumePdf: s.file().optional(),
     body: s.mdx(),
   }),

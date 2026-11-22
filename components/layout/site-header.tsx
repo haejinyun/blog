@@ -9,9 +9,9 @@ import siteLogo from './site-logo.png';
 const navigationItems: { href: Route; label: string }[] = [
   { href: '/blog', label: 'Blog' },
   { href: '/series', label: 'Series' },
-  // [숨김] Projects·About 은 콘텐츠를 채우기 전까지 숨긴다 (2026-11-22 사용자 결정). 다시 열 때 이 파일의 주석 블록을 모두 되돌리고, tests/e2e 의 같은 표시가 있는 test.skip 도 해제한다
+  // [숨김] Projects 는 콘텐츠를 채우기 전까지 숨긴다 (2026-11-22 사용자 결정, About 은 2026-11-23 공개). 다시 열 때 이 주석을 되돌리고(About 앞), tests/e2e 의 같은 표시가 있는 test.skip 도 해제한다
   // { href: '/projects', label: 'Projects' },
-  // { href: '/about', label: 'About' },
+  { href: '/about', label: 'About' },
 ];
 
 export function SiteHeader() {

@@ -1,9 +1,10 @@
 import type { Metadata } from 'next';
-import { PageHeading } from '@/components/layout/page-heading';
-import { MdxArticle } from '@/components/mdx/mdx-article';
-import { PostDate } from '@/components/post/post-date';
+import { AboutHero } from '@/components/about/about-hero';
+import { AboutSection } from '@/components/about/about-section';
+import { ResumeEntryList } from '@/components/about/resume-entry-list';
+import { MdxContent } from '@/components/mdx/mdx-content';
+import { TechStackList } from '@/components/project/tech-stack-list';
 import { JsonLdScript } from '@/components/seo/json-ld-script';
-import { siteConfig } from '@/lib/config';
 import { aboutRepository } from '@/lib/content';
 import { createPersonJsonLd } from '@/lib/seo/json-ld';
 import { createPageMetadata } from '@/lib/seo/metadata';
@@ -15,40 +16,29 @@ export async function generateMetadata(): Promise<Metadata> {
 
 export default async function AboutPage() {
   const about = await aboutRepository.getAbout();
+  const entrySections = [
+    { id: 'work', label: 'Work', entries: about.work },
+    { id: 'projects', label: 'Courses / Projects', entries: about.projects },
+    { id: 'education', label: 'Education', entries: about.education },
+  ].filter((section) => section.entries.length > 0);
 
   return (
-    <div className="flex flex-col gap-10">
+    <div className="flex flex-col gap-section">
       <JsonLdScript data={createPersonJsonLd()} />
-      <div className="flex flex-col gap-4 border-b border-border pb-8">
-        <PageHeading title={about.title} description={about.description} />
-        <div className="flex flex-wrap items-center gap-4 text-caption tracking-caption text-muted-foreground">
-          <span>
-            최종 수정 <PostDate date={about.updated} />
-          </span>
-          {about.resumePdf && (
-            <a
-              href={about.resumePdf}
-              download
-              className="text-foreground underline underline-offset-4 hover:no-underline"
-            >
-              이력서 PDF 다운로드
-            </a>
-          )}
+      <AboutHero role={about.role} headline={about.headline} resumePdf={about.resumePdf} />
+      <AboutSection id="introduce" label="Introduce">
+        <div className="flex flex-col gap-2 break-keep sm:text-body [&_p:first-child]:text-body [&_p:first-child]:sm:text-heading-sm">
+          <MdxContent code={about.body} />
         </div>
-      </div>
-      <MdxArticle code={about.body} />
-      {/* 연락처는 이메일만 공개한다 (전화번호·주소 금지). 값은 lib/config.ts 에서만 관리 */}
-      <section aria-labelledby="contact-heading" className="flex flex-col gap-2">
-        <h2 id="contact-heading" className="text-body font-normal">
-          연락처
-        </h2>
-        <a
-          href={`mailto:${siteConfig.author.email}`}
-          className="underline underline-offset-4 hover:no-underline"
-        >
-          {siteConfig.author.email}
-        </a>
-      </section>
+      </AboutSection>
+      <AboutSection id="skills" label="Skills">
+        <TechStackList items={about.skills} />
+      </AboutSection>
+      {entrySections.map((section) => (
+        <AboutSection key={section.id} id={section.id} label={section.label}>
+          <ResumeEntryList entries={section.entries} />
+        </AboutSection>
+      ))}
     </div>
   );
 }

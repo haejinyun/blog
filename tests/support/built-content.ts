@@ -103,8 +103,22 @@ export const featuredProjects = publishedProjects
       (a.featuredOrder ?? Number.POSITIVE_INFINITY) - (b.featuredOrder ?? Number.POSITIVE_INFINITY),
   );
 
+interface BuiltResumeEntry {
+  title: string;
+  startDate: string;
+  endDate?: string;
+  techStack: string[];
+  links: { label: string; url: string }[];
+}
+
 interface BuiltAbout {
   title: string;
+  role: string;
+  headline: string;
+  skills: string[];
+  work: BuiltResumeEntry[];
+  projects: BuiltResumeEntry[];
+  education: BuiltResumeEntry[];
   resumePdf?: string;
 }
 

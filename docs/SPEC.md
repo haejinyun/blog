@@ -137,12 +137,30 @@ export interface ProjectRepository {
   getFeaturedProjects(): Promise<ProjectMeta[]>; // featured 만, featuredOrder 오름차순
 }
 
+// 2026-11-22 구조화 (사용자 승인): 이력 내용을 frontmatter 데이터로 두고 전용 컴포넌트로 그린다
+export interface ResumeEntry {
+  title: string;         // 회사·과정·학교 이름
+  role?: string;
+  startDate: string;     // 'YYYY-MM'
+  endDate?: string;      // 없으면 진행 중
+  summary?: string;
+  team?: string;         // 팀 구성
+  highlights: string[];
+  techStack: string[];   // 항목 아래 한 줄. 없으면 숨김
+  links: { label: string; url: string }[];  // 없으면 숨김
+}
+
 export interface About {
   title: string;
   description: string;
-  updated: string;       // 이력 최종 수정일
+  role: string;          // 이름 위 직함
+  headline: string;      // 이름 아래 한 줄 소개
+  skills: string[];
+  work: ResumeEntry[];
+  projects: ResumeEntry[];  // Courses / Projects
+  education: ResumeEntry[];
   resumePdf?: string;    // 없으면 PDF 다운로드 링크를 숨긴다
-  body: string;
+  body: string;          // Introduce 본문
 }
 
 export interface AboutRepository {
@@ -162,6 +180,7 @@ export interface AboutRepository {
 - slug가 중복되거나 필수 frontmatter가 빠져 있으면 빌드를 실패시킨다 (조용히 넘어가지 않는다).
 - 프로젝트 필수 frontmatter: title, description, startDate(YYYY-MM), role, techStack. 공개 대표 프로젝트(`featured: true`)가 3개를 넘으면 빌드를 실패시킨다.
 - `content/about.mdx`가 없으면 빌드를 실패시킨다. 연락처는 이메일만 공개하고 값은 `lib/config.ts`에서 가져온다.
+- 이력 페이지에는 사진, 전화번호, 생년월일을 넣지 않는다 (2026-11-22 사용자 결정). 이름은 `lib/config.ts`의 작성자 이름을 쓴다.
 
 frontmatter 예시
 
