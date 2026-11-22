@@ -20,7 +20,7 @@ export function SiteHeader() {
       <div className="mx-auto flex h-16 max-w-3xl items-center justify-between gap-2 px-4">
         <Link
           href="/"
-          className="flex shrink-0 items-center gap-1 text-base font-normal sm:gap-2 sm:text-body-sm"
+          className="flex shrink-0 items-center gap-1 text-body-sm font-normal sm:gap-2"
         >
           {/* 파비콘과 같은 이미지. 옆에 사이트 이름이 있어서 장식용(alt="")으로 둔다 */}
           <Image src={siteLogo} alt="" width={28} height={28} priority />
@@ -28,7 +28,7 @@ export function SiteHeader() {
         </Link>
         <div className="flex items-center gap-1 sm:gap-3">
           <nav aria-label="주 메뉴">
-            <ul className="flex items-center text-caption tracking-caption text-muted-foreground uppercase sm:gap-element">
+            <ul className="flex items-center text-caption tracking-caption text-muted-foreground uppercase gap-1 sm:gap-element">
               {navigationItems.map((item) => (
                 <li key={item.href}>
                   <NavigationLink href={item.href} label={item.label} />

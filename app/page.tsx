@@ -25,9 +25,7 @@ export default async function HomePage() {
     <div className="flex flex-col gap-section">
       <JsonLdScript data={createPersonJsonLd()} />
       <section className="flex flex-col gap-3">
-        <h1 className="text-4xl font-normal tracking-tight sm:text-heading-lg">
-          {siteConfig.description}
-        </h1>
+        <h1 className="text-heading-sm font-normal sm:text-heading-lg">{siteConfig.description}</h1>
         {/* placeholder: 소개 문구는 나중에 작성 */}
         <p className="text-muted-foreground">
           개발하며 배우고 고민한 것들을 기록하고, 만든 것들을 정리합니다.

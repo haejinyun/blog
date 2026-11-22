@@ -50,22 +50,26 @@
    * 글자 크기. 굵기는 400 하나만 쓰고 크기와 자간으로 위계를 만든다.
    * 행간은 한글 가독성 때문에 디자인 문서(1.05~1.15)보다 넓혔다. 여러 줄이 되는 본문·설명은 1.6
    */
+  /* 2026-11-22: 사용자 요청으로 전체 크기를 줄임 (제목 약 30%, 본문은 한글 가독성 때문에 16px 하한). 자간은 em 이라 크기를 따라간다 */
   --text-caption: 12px; /* UI 라벨 (메뉴, 날짜, 태그) */
   --text-caption--line-height: 1.1;
-  --text-caption--letter-spacing: 0.36px;
-  --tracking-caption: 0.36px;
-  --text-body-sm: 19px; /* 본문, 설명 */
+  --text-caption--letter-spacing: 0.03em;
+  --tracking-caption: 0.03em;
+  --text-body-sm: 16px; /* 본문, 설명 */
   --text-body-sm--line-height: 1.6;
-  --text-body-sm--letter-spacing: -0.13px;
-  --text-body: 23px; /* 목록 제목, 소제목, 글 요약 */
-  --text-body--line-height: 1.35;
-  --text-body--letter-spacing: -0.16px;
-  --text-heading: 55px; /* 글·프로젝트 제목 */
-  --text-heading--line-height: 1.15;
-  --text-heading--letter-spacing: -0.94px;
-  --text-heading-lg: 57px; /* 페이지 제목, 홈 소개 */
-  --text-heading-lg--line-height: 1.15;
-  --text-heading-lg--letter-spacing: -1.14px;
+  --text-body-sm--letter-spacing: -0.007em;
+  --text-body: 18px; /* 목록 제목, 소제목, 글 요약 */
+  --text-body--line-height: 1.4;
+  --text-body--letter-spacing: -0.007em;
+  --text-heading-sm: 28px; /* 모바일 제목 */
+  --text-heading-sm--line-height: 1.25;
+  --text-heading-sm--letter-spacing: -0.015em;
+  --text-heading: 38px; /* 글·프로젝트 제목 */
+  --text-heading--line-height: 1.2;
+  --text-heading--letter-spacing: -0.017em;
+  --text-heading-lg: 40px; /* 페이지 제목, 홈 소개 */
+  --text-heading-lg--line-height: 1.2;
+  --text-heading-lg--letter-spacing: -0.02em;
 }
 
 body {
