@@ -18,6 +18,7 @@
     "import:velog": "node scripts/import-velog.ts"
   },
   "dependencies": {
+    "@vercel/analytics": "2.0.1",
     "next": "16.4.6",
     "react": "19.3.1",
     "react-dom": "19.3.1",

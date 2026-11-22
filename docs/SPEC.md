@@ -13,6 +13,7 @@
 - 로컬에서 dev로 개발하고, build로 정적 파일(`out/`)을 만들어 Vercel에 배포한다. 배포는 사용자 요청으로 범위에 넣었다 (2026-11-22). 12장 참고
 - 사이트 URL은 환경변수로 받는다. 배포 환경에서 코드를 고치지 않고 주소를 바꾸기 위해서다.
 - velog 마이그레이션은 사용자 요청으로 범위에 넣었다 (2026-11-20). 11장 참고
+- 방문 통계는 Vercel Web Analytics(`@vercel/analytics`)로 본다. 사용자 요청으로 범위에 넣었다 (2026-11-23). 12장 참고
 - 댓글, 좋아요/조회수, 검색은 아직 범위가 아니다. 10장 참고
 
 ## 3. 비목표 (하지 않는 것)
@@ -301,4 +302,5 @@ Phase 1(기반), 2(탐색), 3(SEO), 4(포트폴리오/이력)는 모두 끝났�
   - 환경 변수: `NEXT_PUBLIC_SITE_URL=https://paori.dev`, `ENABLE_EXPERIMENTAL_COREPACK=1` (`package.json`의 pnpm 버전을 그대로 쓰기 위해)
 - 도메인은 `paori.dev`(가비아). 네임서버는 가비아를 쓰고 A(`@`)와 CNAME(`www`) 레코드로 Vercel에 연결한다.
 - 대표 주소는 `https://paori.dev`. `www`, `http`, `vercel.app` 주소는 308로 대표 주소에 리다이렉트한다. HTTPS 인증서는 Vercel이 자동으로 발급·갱신한다.
+- 방문 통계: Vercel Web Analytics. 루트 layout의 `<Analytics />`가 배포 환경에서 `/_vercel/insights/script.js`를 불러온다. Vercel 대시보드의 프로젝트 Analytics 탭에서 켜야 수집된다. 쿠키를 쓰지 않고, 스크립트가 실패해도 화면에는 영향이 없다 (e2e 테스트로 확인)
 - 검색 등록: Google Search Console은 도메인 속성(DNS TXT 인증), 네이버 서치어드바이저는 메타 태그 인증(`lib/config.ts`의 `searchVerification`). 둘 다 `sitemap.xml`을 제출한다.

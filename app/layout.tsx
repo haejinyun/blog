@@ -1,3 +1,4 @@
+import { Analytics } from '@vercel/analytics/next';
 import type { Metadata } from 'next';
 import localFont from 'next/font/local';
 import type { ReactNode } from 'react';
@@ -33,6 +34,8 @@ export default function RootLayout({ children }: { children: ReactNode }) {
         <SiteHeader />
         <main className="mx-auto w-full max-w-3xl flex-1 px-4 py-12">{children}</main>
         <SiteFooter />
+        {/* Vercel Web Analytics (쿠키 없음). 스크립트는 배포 환경에서 Vercel 이 제공하고, 실패해도 화면에는 영향이 없다 */}
+        <Analytics />
       </body>
     </html>
   );
