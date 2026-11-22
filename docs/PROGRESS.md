@@ -10,9 +10,9 @@
 ## 현재 상태 (2026-11-22 기준, `https://paori.dev` 배포 완료)
 
 - SPEC 8장의 Phase 1~4 완료, velog 마이그레이션 1차(시리즈 1개, 7편) 완료, Vercel 배포와 도메인 연결 완료
-- 테스트: `pnpm test` 103개 통과, 15개 skip (draft 대상 없음 10개, Projects·About 숨김 5개) / `pnpm lint` 통과
+- 테스트: `pnpm test` 107개 통과, 15개 skip (draft 대상 없음 10개, Projects·About 숨김 5개) / `pnpm lint` 통과
 - git: GitHub `haejinyun/blog`(공개)의 `main`. push하면 Vercel이 자동 배포한다. **커밋은 사용자가 요청할 때만** 한다
-- 커밋 대기 중인 변경: README 영어 버전, 네이버 인증 메타 태그, SPEC·PROGRESS 정리, 사이트 이름 `paori`, 글자 크기 축소, 푸터 파오리 이스터에그
+- 검색 등록 완료: Google Search Console(도메인 속성), 네이버 서치어드바이저. `vercel.app` → `paori.dev` 리다이렉트 완료
 
 ## 작업 재개 방법
 
@@ -28,6 +28,17 @@ pnpm build && pnpm preview   # 정적 결과물 확인
 
 ## 다음 할 일
 
+### 우선순위 (2026-11-22 정리)
+1. **다음 세션: About 다시 열기**. 시작할 때 정할 것
+   - 회사명을 About에 쓸지. `.forbidden-strings.local`에 회사명을 넣기로 했던 것과 충돌함 (회사명을 쓰면 금지 목록에서 빼야 함)
+   - 지금처럼 `about.mdx` 자유 마크다운으로 쓸지, 경력·기술을 frontmatter 구조화 데이터 + 전용 컴포넌트(타임라인 등)로 만들지 (구조화하면 SPEC 5장 `About` 인터페이스 변경 → 사용자 승인)
+   - 이력서 PDF를 둘지 (`resumePdf`), Person JSON-LD에 직함·SNS 링크(`jobTitle`, `sameAs`)를 넣을지
+   - 다 쓰면 `[숨김]` 주석에서 About만 되돌리고(메뉴 3개) 관련 `test.skip` 해제. 홈 소개 문단(placeholder)도 같이 쓰면 좋음
+2. **콘텐츠 다듬기**: velog 3편 description, 시리즈 설명, 태그 달지 정하기, 나머지 velog 시리즈 가져오기 (시리즈 없는 글은 스크립트 미지원)
+3. **Projects 다시 열기**: 실제 케이스 스터디 작성, `sample-*` 삭제, 메뉴 4개 복구(360px 넘침 테스트 확인)
+4. **품질·안전**: `.forbidden-strings.local` 작성 + 검사 보강, draft 테스트를 픽스처 빌드로 전환(지금 skip 10개), dev와 build의 `.velite` 분리
+5. **나중 (SPEC 10장, 아직 범위 아님)**: 댓글(giscus), 좋아요/조회수, 검색
+
 ### velog 마이그레이션 (1차 완료, 사용자 확인 대기)
 - [ ] 가져온 7편 확인 (`pnpm dev` 또는 `pnpm build && pnpm preview`)
 - [ ] 태그: velog 글에 태그가 없어서 7편 모두 `tags: []`. 태그를 달지 정하기 (지금은 `/tags/*` 페이지가 없음)
@@ -37,9 +48,6 @@ pnpm build && pnpm preview   # 정적 결과물 확인
 - [ ] 나머지 velog 글 가져오기 (시리즈별로 `pnpm import:velog --username haejinyun --series <slug>`. 시리즈에 속하지 않은 글은 스크립트가 아직 지원하지 않음)
 
 ### 배포 후 남은 일
-- [ ] `<프로젝트>.vercel.app` 주소도 `paori.dev`로 308 리다이렉트 (Vercel Domains → Edit)
-- [ ] Google Search Console: 도메인 속성으로 `paori.dev` 등록, 가비아 DNS에 TXT 레코드(`@`) 추가 후 인증, `https://paori.dev/sitemap.xml` 제출
-- [ ] 네이버 서치어드바이저: 메타 태그를 넣은 커밋을 배포한 뒤 소유 확인, sitemap과 RSS(`/rss.xml`) 제출
 - [ ] 한글 slug 글이 생기면 배포 사이트에서 열리는지 확인
 
 ### 사용자가 채울 콘텐츠
@@ -51,7 +59,6 @@ pnpm build && pnpm preview   # 정적 결과물 확인
 - [ ] (제안) 금지 정보 검사 보강: 사설 IP·내부 도메인 형태·`호스트:포트` 정규식 추가, 검사 범위를 빌드 결과물에서 커밋 대상 원본 파일까지 넓히기
 
 ### 디자인 (1차 적용 완료, 기준: `docs/DESIGN.md`)
-- [ ] 코드 하이라이팅(Shiki), 인라인 코드 백틱
 
 디자인을 바꿀 때 손댈 곳:
 - 색상·폰트 토큰: `app/globals.css` (`:root` 변수 + `@theme inline`, 간격·모서리·라벨은 `@theme`)
@@ -60,7 +67,7 @@ pnpm build && pnpm preview   # 정적 결과물 확인
 - 목록·카드: `components/post/post-list-item.tsx`(미리보기 이미지), `components/project/project-list.tsx`, `components/series/*`, `components/home/home-section.tsx`
 - 글 상단 대표 이미지: `components/post/post-cover-image.tsx`, 목차: `components/post/table-of-contents.tsx` + `components/mdx/article-with-toc.tsx`
 - OG 이미지: `lib/seo/og-image.tsx`의 `COLORS` (globals.css 팔레트와 같은 값)
-- 같이 처리할 것: 코드 하이라이팅(Shiki, 테마는 디자인과 함께), 인라인 코드에 백틱이 보이는 typography 기본 스타일
+- 코드: 하이라이팅은 `velite.config.ts`의 `shikiOptions`(테마), 인라인 코드·코드 블록 바탕은 `app/globals.css`
 - 디자인을 바꾼 뒤 e2e 테스트가 역할·텍스트 기준으로 찾으므로(`main article h2` 등) 구조를 바꾸면 테스트도 같이 확인
 
 ### 사용자에게 물어본 뒤 답을 못 받은 것
@@ -124,6 +131,7 @@ pnpm build && pnpm preview   # 정적 결과물 확인
 | 2026-11-22 | 사이트 이름 `paori` (본명은 글쓴이 정보로: 푸터, About, JSON-LD, 홈 첫 문장 "안녕하세요, 윤해진입니다."는 유지) | 사용자 결정. 도메인 `paori.dev`, 로고, SNS 이름과 맞춤. 레포 이름(`blog`)과 `package.json` name은 그대로 |
 | 2026-11-22 | 글자 크기 축소: 본문 19→16, 목록 제목·요약 23→18, 제목 55·57→38·40, 모바일 제목 36→28(`heading-sm` 토큰 추가), 라벨 12 유지. 자간은 em으로 | 사용자 요청("전체적으로 30% 정도 줄이기"). 본문은 한글 가독성 때문에 16px 하한 |
 | 2026-11-22 | 푸터 저작권 옆 파오리 아이콘(16px, 픽셀 렌더링)을 누르면 이스터에그 모달 (`components/layout/paori-easter-egg.tsx`, 네이티브 `<dialog>`) | 사용자 요청. `<dialog>`라 Esc 닫기·포커스 처리가 기본 제공. 배경 클릭으로도 닫힘. 내용은 사용자가 쓴 편지(포켓몬 이야기). 한글이 단어 중간에서 끊기지 않게 `break-keep`. README 끝에도 `<details>`로 접힌 이스터에그 한 줄 |
+| 2026-11-22 | 코드 하이라이팅은 Shiki(`@shikijs/rehype`, 테마 `vitesse-dark`)를 Velite 빌드 단계에서 적용. `rootStyle: false`로 테마 배경을 빼고 디자인 토큰(검정 바탕) 사용. 인라인 코드는 백틱을 없애고 흰 칩 모양 | 빌드 시 HTML로 바뀌어서 브라우저 JS가 없음. 언어는 필요할 때만 불러오고(lazy), 모르는 언어·언어 표시 없는 블록은 일반 텍스트. 테마는 에이전트 선택(검정 바탕에 어울리는 차분한 색), 바꾸려면 `shikiOptions.theme`만 수정 |
 | 2026-11-22 | README는 영어로 짧게 (소개 한 줄 + Development + Deployment + Tech Stack + Author) | 사용자 결정. 참고: github.com/yceffort/blog |
 | 2026-11-22 | Projects·About을 콘텐츠 준비 전까지 숨김: 상단 메뉴 항목과 홈 대표 프로젝트 섹션을 코드 주석으로 막음(`[숨김]` 표시). 관련 테스트 5개 `test.skip` | 사용자 결정(설정값 방식 대신 주석). 페이지(`/projects`, `/about`)는 빌드되고 sitemap에도 남아 있어 주소로는 접근 가능 |
 | 2026-11-22 | 작성 중인 글·프로젝트는 `content/drafts/`(git 제외)에서 쓰고 발행할 때 옮김. placeholder `draft-sample-project`는 `content/drafts/projects/`로 이동 | 사용자 결정: 공개 레포에는 화면에 보일 완성본만. 경로로 구분해야 `.gitignore`가 동작함. 폴더 이름 접두어 방식은 `draft` 값과 어긋나면 완성 글이 git에서 빠질 수 있어서 피함. 단점: draft는 백업이 없음 |
@@ -225,3 +233,4 @@ pnpm build && pnpm preview   # 정적 결과물 확인
 - **배포 마무리**: 네이버 서치어드바이저 메타 태그 + 테스트 1개, README Deployment 섹션, SPEC에 배포 범위·결정(2·3·4·12장) 반영하고 완료된 Phase 조건·미정 사항·다음 단계 항목 정리, PROGRESS 완료 항목 정리
 - **사이트 이름·글자 크기**: 사이트 이름 `paori`, 글자 크기 토큰 축소(`heading-sm` 추가), 모바일 메뉴 간격
 - **푸터 이스터에그**: 파오리 아이콘 + 모달(샘플 내용), 테스트 2개 추가
+- **코드 표시**: Shiki 하이라이팅, 인라인 코드 백틱 제거, 테스트 2개 추가(`tests/e2e/code.spec.ts`). 검색 등록·vercel.app 리다이렉트 완료(사용자)
