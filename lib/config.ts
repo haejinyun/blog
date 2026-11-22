@@ -12,7 +12,7 @@ function resolveSiteUrl(): string {
 
 export const siteConfig = {
   url: resolveSiteUrl(),
-  title: 'haejinlog',
+  title: 'paori',
   description: '안녕하세요, 윤해진입니다.',
   locale: 'ko_KR',
   language: 'ko',
@@ -23,6 +23,10 @@ export const siteConfig = {
     englishName: 'Haejin Yun',
     email: 'dbshaejin@gmail.com',
     github: 'https://github.com/haejinyun',
+  },
+  /** 검색엔진 사이트 소유 확인 값 (비밀 정보 아님). Google 은 DNS TXT 레코드로 인증해서 여기 없다 */
+  searchVerification: {
+    naver: '18885e59b8985088cb65cfc44447570182740b80',
   },
 } as const;
 

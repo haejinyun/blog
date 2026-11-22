@@ -20,6 +20,10 @@ export const metadata: Metadata = {
     template: `%s | ${siteConfig.title}`,
   },
   description: siteConfig.description,
+  // 모든 페이지 <head> 에 들어간다. 네이버 서치어드바이저는 홈에서 확인한다
+  verification: {
+    other: { 'naver-site-verification': siteConfig.searchVerification.naver },
+  },
 };
 
 export default function RootLayout({ children }: { children: ReactNode }) {
