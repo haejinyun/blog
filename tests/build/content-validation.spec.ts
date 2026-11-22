@@ -288,3 +288,27 @@ test('목록 미리보기 이미지는 대표 이미지(thumbnail), 없으면 �
 
   expect(bySlug.get('no-image')?.previewImage).toBeUndefined();
 });
+
+test('굵게·기울임·인라인 코드가 들어간 소제목도 목차 제목이 글자만으로 만들어진다', () => {
+  const body = [
+    '## **굵은 소제목**',
+    '',
+    '### _기울인_ 소제목과 `코드`',
+    '',
+    '## 일반 소제목',
+    '',
+  ].join('\n');
+  const { exitCode, output, posts } = buildFixture('toc-formatting', {
+    'content/posts/2026/11/toc/index.md': postFile(validFrontmatter).replace('본문', body),
+  });
+
+  expect(exitCode, output).toBe(0);
+  expect(posts[0]?.toc).toEqual([
+    {
+      title: '굵은 소제목',
+      url: '#굵은-소제목',
+      items: [{ title: '기울인 소제목과 코드', url: '#기울인-소제목과-코드', items: [] }],
+    },
+    { title: '일반 소제목', url: '#일반-소제목', items: [] },
+  ]);
+});

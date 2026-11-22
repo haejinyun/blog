@@ -39,6 +39,41 @@ const rehypeRawOptions = {
   ],
 };
 
+/** 목차 생성에 필요한 mdast 노드 모양 */
+interface TocTreeNode {
+  type: string;
+  value?: string;
+  url?: string;
+  children?: TocTreeNode[];
+}
+
+interface TocEntry {
+  title: string;
+  url: string;
+  items: TocEntry[];
+}
+
+/** 노드 안의 글자를 이어 붙인다 (굵게·기울임·링크 안쪽 글자와 인라인 코드 포함) */
+function collectTocText(node: TocTreeNode): string {
+  if (node.type === 'text' || node.type === 'inlineCode') return node.value ?? '';
+  return (node.children ?? []).map(collectTocText).join('');
+}
+
+/**
+ * Velite s.toc({ original: true }) 의 목차 트리(목록)를 { title, url, items } 로 바꾼다.
+ * Velite 0.4.0 의 기본 변환은 굵게·기울임 노드의 없는 value 까지 이어 붙여서
+ * '### **마치며**' 같은 소제목이 목차에 'undefined마치며' 로 나온다. 그래서 직접 변환한다.
+ */
+function parseTocList(list: TocTreeNode | undefined): TocEntry[] {
+  if (list?.type !== 'list') return [];
+  return (list.children ?? []).flatMap((item) => {
+    const [paragraph, nestedList] = item.children ?? [];
+    const link = paragraph?.children?.find((child) => child.type === 'link');
+    if (!link?.url) return [];
+    return [{ title: collectTocText(link), url: link.url, items: parseTocList(nestedList) }];
+  });
+}
+
 const posts = defineCollection({
   name: 'Post',
   pattern: 'posts/**/index.{md,mdx}',
@@ -55,11 +90,12 @@ const posts = defineCollection({
       draft: s.boolean().default(false),
       sourcePath: s.path(),
       raw: s.raw(),
-      toc: s.toc({ maxDepth: 3 }),
+      toc: s.toc({ maxDepth: 3, original: true }),
       body: s.mdx(),
     })
-    .transform(({ sourcePath, raw, thumbnail, ...post }) => ({
+    .transform(({ sourcePath, raw, thumbnail, toc, ...post }) => ({
       ...post,
+      toc: parseTocList(toc.map),
       slug: extractSlugFromPath(sourcePath),
       sourcePath,
       thumbnail: thumbnail?.src,
@@ -104,11 +140,12 @@ const projects = defineCollection({
       featuredOrder: s.number().int().positive().optional(),
       draft: s.boolean().default(false),
       sourcePath: s.path(),
-      toc: s.toc({ maxDepth: 3 }),
+      toc: s.toc({ maxDepth: 3, original: true }),
       body: s.mdx(),
     })
-    .transform(({ sourcePath, thumbnail, ...project }) => ({
+    .transform(({ sourcePath, thumbnail, toc, ...project }) => ({
       ...project,
+      toc: parseTocList(toc.map),
       slug: extractSlugFromPath(sourcePath),
       sourcePath,
       thumbnail: thumbnail?.src,
