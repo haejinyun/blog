@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import { PageHeading } from '@/components/layout/page-heading';
 import { PostList } from '@/components/post/post-list';
+import { PreviousBlogNotice } from '@/components/post/previous-blog-notice';
 import { postRepository } from '@/lib/content';
 import { createPageMetadata } from '@/lib/seo/metadata';
 
@@ -15,6 +16,7 @@ export default async function BlogPage() {
     <>
       <PageHeading title="Blog" description={description} />
       <PostList posts={posts} />
+      <PreviousBlogNotice />
     </>
   );
 }

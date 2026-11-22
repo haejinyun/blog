@@ -1,4 +1,5 @@
 import { expect, test } from '@playwright/test';
+import { siteConfig } from '../../lib/config';
 import {
   draftPosts,
   postsWithImage,
@@ -12,6 +13,14 @@ test.describe('/blog 글 목록', () => {
 
     const titles = page.locator('main article h2');
     await expect(titles).toHaveText(publishedPosts.map((post) => post.title));
+  });
+
+  test('목록 아래에 이전 블로그(velog) 링크가 새 탭으로 열리게 있다', async ({ page }) => {
+    await page.goto('/blog');
+
+    const link = page.getByRole('complementary', { name: '이전 글 안내' }).getByRole('link');
+    await expect(link).toHaveAttribute('href', siteConfig.previousBlogUrl);
+    await expect(link).toHaveAttribute('target', '_blank');
   });
 
   test('draft 글은 목록에 없다', async ({ page }) => {

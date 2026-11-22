@@ -24,6 +24,8 @@ export const siteConfig = {
     email: 'dbshaejin@gmail.com',
     github: 'https://github.com/haejinyun',
   },
+  /** 옮기기 전 블로그. 아직 옮기지 않은 글이 있어서 /blog 목록 아래에 안내한다. 다 옮기면 지운다 */
+  previousBlogUrl: 'https://velog.io/@haejinyun',
   /** 검색엔진 사이트 소유 확인 값 (비밀 정보 아님). Google 은 DNS TXT 레코드로 인증해서 여기 없다 */
   searchVerification: {
     naver: '18885e59b8985088cb65cfc44447570182740b80',
