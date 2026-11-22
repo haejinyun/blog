@@ -67,3 +67,25 @@ test.describe('글 상세 맨 위로 버튼', () => {
     await expect(page.getByRole('button', { name: '맨 위로' })).toHaveCount(0);
   });
 });
+
+test.describe('푸터 파오리 이스터에그', () => {
+  test('파오리를 누르면 모달이 열리고 Esc 로 닫힌다', async ({ page }) => {
+    await page.goto('/');
+    const dialog = page.getByRole('dialog');
+    await expect(dialog).toBeHidden();
+
+    await page.getByRole('contentinfo').getByRole('button', { name: '파오리' }).click();
+    await expect(dialog).toBeVisible();
+    await expect(dialog.getByRole('heading')).toBeVisible();
+
+    await page.keyboard.press('Escape');
+    await expect(dialog).toBeHidden();
+  });
+
+  test('닫기 버튼으로 모달을 닫는다', async ({ page }) => {
+    await page.goto('/');
+    await page.getByRole('contentinfo').getByRole('button', { name: '파오리' }).click();
+    await page.getByRole('dialog').getByRole('button', { name: '닫기' }).click();
+    await expect(page.getByRole('dialog')).toBeHidden();
+  });
+});
