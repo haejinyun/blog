@@ -1,0 +1,100 @@
+@import "tailwindcss";
+@plugin "@tailwindcss/typography";
+
+/*
+ * 디자인 토큰: docs/DESIGN.md (Telescope) 기준. 라이트 테마만 쓴다.
+ * 폰트는 SPEC 결정대로 Pretendard 하나만 쓰고, 디자인 문서의 색상·테두리·모서리·간격·글자 크기를 따른다.
+ */
+:root {
+  color-scheme: light;
+
+  /* 원본 팔레트 */
+  --color-bone-paper: #f4f3f0;
+  --color-ink: #1a1915;
+  --color-ash: #686c73; /* 원본 #82868e 은 바탕 대비 3.3:1 이라 WCAG AA(4.5:1)를 맞추게 진하게 (바탕 4.75:1, 흰색 5.27:1) */
+  --color-pure-white: #ffffff;
+  --color-lime-pulse: #e3f794;
+
+  /* 역할별 이름 (컴포넌트는 이 이름만 쓴다) */
+  --background: var(--color-bone-paper); /* 페이지 바탕 */
+  --foreground: var(--color-ink); /* 본문, 제목, 선 */
+  --muted-foreground: var(--color-ash); /* 날짜·설명 같은 보조 정보. 본문에는 쓰지 않는다 */
+  --border: var(--color-ink); /* 가는 구분선 */
+  --surface: var(--color-pure-white); /* 바탕 위에 한 겹 올린 면 (헤더, 카드, 태그) */
+  --highlight: var(--color-lime-pulse); /* 현재 메뉴 표시에만 쓴다 */
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-border: var(--border);
+  --color-surface: var(--surface);
+  --color-highlight: var(--highlight);
+  --font-sans: var(--font-pretendard), ui-sans-serif, system-ui, sans-serif;
+}
+
+@theme {
+  /* 모든 모서리는 2px. rounded-sm 만 쓴다 */
+  --radius-sm: 2px;
+
+  /*
+   * 간격. 디자인 문서의 범위 값(48-71px 등)은 CSS 값이 아니라서 범위 안의 값 하나로 정했다.
+   * 디자인 문서의 숫자 이름 토큰(--spacing-6 = 6px 등)은 Tailwind 기본 눈금(p-6 = 24px)을 덮어써서 가져오지 않는다.
+   */
+  --spacing-section: 56px; /* 큰 섹션 사이 (48-71px) */
+  --spacing-card: 14px; /* 카드 안쪽 여백 (10-14px) */
+  --spacing-element: 10px; /* 인라인 요소 사이 (6-10px) */
+
+  /*
+   * 글자 크기. 굵기는 400 하나만 쓰고 크기와 자간으로 위계를 만든다.
+   * 행간은 한글 가독성 때문에 디자인 문서(1.05~1.15)보다 넓혔다. 여러 줄이 되는 본문·설명은 1.6
+   */
+  --text-caption: 12px; /* UI 라벨 (메뉴, 날짜, 태그) */
+  --text-caption--line-height: 1.1;
+  --text-caption--letter-spacing: 0.36px;
+  --tracking-caption: 0.36px;
+  --text-body-sm: 19px; /* 본문, 설명 */
+  --text-body-sm--line-height: 1.6;
+  --text-body-sm--letter-spacing: -0.13px;
+  --text-body: 23px; /* 목록 제목, 소제목, 글 요약 */
+  --text-body--line-height: 1.35;
+  --text-body--letter-spacing: -0.16px;
+  --text-heading: 55px; /* 글·프로젝트 제목 */
+  --text-heading--line-height: 1.15;
+  --text-heading--letter-spacing: -0.94px;
+  --text-heading-lg: 57px; /* 페이지 제목, 홈 소개 */
+  --text-heading-lg--line-height: 1.15;
+  --text-heading-lg--letter-spacing: -1.14px;
+}
+
+body {
+  background-color: var(--background);
+  color: var(--foreground);
+  font-size: var(--text-body-sm);
+  line-height: var(--text-body-sm--line-height);
+  letter-spacing: var(--text-body-sm--letter-spacing);
+}
+
+/* 본문(MDX/마크다운) 색상. typography 플러그인 변수를 디자인 토큰으로 바꾼다 */
+.prose {
+  font-size: var(--text-body-sm);
+  line-height: 1.75;
+  --tw-prose-body: var(--foreground);
+  --tw-prose-headings: var(--foreground);
+  --tw-prose-lead: var(--muted-foreground);
+  --tw-prose-links: var(--foreground);
+  --tw-prose-bold: var(--foreground);
+  --tw-prose-counters: var(--muted-foreground);
+  --tw-prose-bullets: var(--muted-foreground);
+  --tw-prose-hr: var(--border);
+  --tw-prose-quotes: var(--foreground);
+  --tw-prose-quote-borders: var(--border);
+  --tw-prose-captions: var(--muted-foreground);
+  --tw-prose-kbd: var(--foreground);
+  --tw-prose-code: var(--foreground);
+  --tw-prose-pre-code: var(--color-bone-paper);
+  --tw-prose-pre-bg: var(--color-ink);
+  --tw-prose-th-borders: var(--border);
+  --tw-prose-td-borders: var(--muted-foreground);
+}
